@@ -11,16 +11,16 @@
     <header class="d-flex p-1 align-items-center">
         <div class="nameTxtContainer ms-4">
             <img src="./assets/images/contact-book.png" alt="" width="45" height="45">
-            <span>ADDRESS BOOK</span>    
+             <span class="headerHeadingName">ADDRESS BOOK</span>    
         </div>
         <div class="ms-auto d-flex me-5">
             <div class="signUpCont mx-4">
                 <img src="./assets/images/user.png" alt="" width="18" height="18" class="headerImg2">
-                <button class="btn text-light">Sign Up</button>
+                <a class="btn text-light" href="index.cfm">Sign Up</a>
             </div>
             <div class="loginCont">
                 <img src="./assets/images/exit.png" alt="" width="18" height="18">
-                <button class="btn text-light">Login</button>
+                <a class="btn text-light"  href="Login.cfm">Login</a>
             </div>
         </div>
     </header>
