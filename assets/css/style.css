@@ -45,10 +45,10 @@ main{
     height: 88vh;
 }
 
-
 .rightFlexHeading{
     color: #337ab7;
 }
+
 .formInput{
     border: 0px solid;
     border-bottom: 1px solid #7c7676;
@@ -66,6 +66,7 @@ main{
 input:focus{
     outline: none;
 }
+
 .registerBtn{
     border: 1px solid #337ab7;
     border-radius: 20px;
@@ -76,5 +77,132 @@ input:focus{
     font-weight: bold;
     color: #337ab7;
     background-color: white;
-
 }
+
+/* Login Page */
+
+.loginFooterTxt{
+    font-size: 15px;
+}
+
+.mainDivLogin{
+    width: 45%;
+    height: 485px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    box-shadow: #7c7676;
+}
+
+.leftFlexLogin{
+    flex-basis: 30%;
+    background-color: #337ab7;
+    height: 485px;
+    border-radius: 20px 0 0 20px;
+}
+
+.rightFlexLogin{
+    flex-basis: 70%;
+    height: 65vh;
+}
+
+/* Home Page */
+
+.headerHeadingName{
+    font-size: 18px;
+}
+
+.homeMain{
+    width: 85%;
+}
+
+.homeTopContainer{
+    width: 100%;
+}
+
+.homeMainContainer{
+    width: 100%;
+}
+
+.homeLeftFlex{
+    flex-basis: 15%;
+}
+
+.homeRightFlex{
+    flex-basis: 85%;
+}
+
+.homeTopImgCont{
+    width: 100%;
+}
+
+.fullNameTxt{
+    font-weight: bold;
+    color: #337ab7;
+}
+.createBtn{
+    border: 1px solid #337ab7;
+    border-radius: 20px;
+    margin: 12px auto;
+    padding: 3px 10px;
+    font-weight: bold;
+    background-color: #337ab7;
+    color: white;
+}
+
+.tableHeading{
+    font-weight: bold;
+    color: #337ab7;
+    font-size: 15px;
+}
+
+table{
+    font-size: 14px;
+}
+
+td > button{
+    border: 1px solid #337ab7;
+    border-radius: 20px;
+    padding: 5px 30px;
+    font-weight: bold;
+    color: #337ab7;
+    background-color: white;
+}
+
+.modal-body{
+    height: 100%;
+    background-color: #DAEEF7;
+}
+
+.modalLeftFlex{
+    flex-basis: 80%;
+}
+
+.modalRightFlex{
+    flex-basis: 20%;
+}
+.modalTitle{
+    color: #337ab7;
+    background-color: #DAEEF7;
+    /* padding: 10px 10px; */
+    /* margin: 50px 45px 30px 50px; */
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: unset;
+        margin: 1.75rem auto;
+    }
+}
+.modal-dialog{
+    width: 55%;
+}
+
+.modalLeftFlexCont{
+    width: 82%;
+    margin: 50px 30px 30px 30px;
+}
+
