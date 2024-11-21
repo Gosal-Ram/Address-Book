@@ -1,6 +1,6 @@
 header{
-    position: fixed;
-    top: 0;
+    /* position: fixed; */
+    /* top: 0; */
     width: 100%;
 }
 
@@ -17,8 +17,9 @@ body{
 header{
     background-color: #337ab7;
     color: white;
-    z-index: 1;
+    /* z-index: 1; */
 }
+
 main{
     position: relative;
     top: 70px;
@@ -26,7 +27,7 @@ main{
 
 .mainDiv{
     width: 50%;
-    height: 600px;
+    height: 700px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -37,12 +38,13 @@ main{
 .leftFlex{
     flex-basis: 30%;
     background-color: #337ab7;
-    height: 600px;
+    height: 700px;
     border-radius: 20px 0 0 20px;
 }
 .rightFlex{
+    margin-top: 50px;
     flex-basis: 70%;
-    height: 88vh;
+    height: 700px;
 }
 
 .rightFlexHeading{
@@ -72,7 +74,7 @@ input:focus{
     border-radius: 20px;
     width: 250px;
     text-align: center;
-    margin: 12px auto;
+    margin: 20px auto;
     padding: 5px;
     font-weight: bold;
     color: #337ab7;
@@ -161,6 +163,10 @@ table{
     font-size: 14px;
 }
 
+tr{
+    border-bottom: 1px solid #e2e2e2;
+}
+
 td > button{
     border: 1px solid #337ab7;
     border-radius: 20px;
@@ -176,33 +182,155 @@ td > button{
 }
 
 .modalLeftFlex{
-    flex-basis: 80%;
+    flex-basis: 72%;
 }
 
-.modalRightFlex{
-    flex-basis: 20%;
-}
 .modalTitle{
     color: #337ab7;
     background-color: #DAEEF7;
     /* padding: 10px 10px; */
     /* margin: 50px 45px 30px 50px; */
-    font-size: 18px;
+    font-size: 19px;
     font-weight: bold;
     text-align: center;
 }
+
 @media (min-width: 576px) {
     .modal-dialog {
         max-width: unset;
         margin: 1.75rem auto;
     }
 }
+
 .modal-dialog{
-    width: 55%;
+    width: 50%;
 }
 
 .modalLeftFlexCont{
-    width: 82%;
-    margin: 50px 30px 30px 30px;
+    width: 85%;
+    margin: 50px 30px 30px 38px;
+}
+
+.modalTiltle2{
+    color: #337ab7;    
+    font-size: 17px;
+    font-weight: bold;
+    margin: 20px 0;
+    border-bottom: 2px solid #35477D;
+    padding: 4px;
+}
+
+.modalLabel{ 
+    color: #337ab7;    
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    padding: 8px; 
+    border-bottom: 1px solid #e2e2e2;
+    width: 30%;
+    text-align: left;
+}
+
+.modalLabelFor2{ 
+    color: #337ab7;    
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0 25px 8px 0;
+    border-bottom: 1px solid #e2e2e2;
+    width: 50%;
+    /* text-align: left; */
+}
+
+.modalInputFor2{
+    margin: 0 0 8px 50px;
+    padding: 4px; 
+    border: 0px solid;
+    border-bottom: 1px solid #c0c0c0;
+    width: 50%;
+    background: none;
+}
+
+.modalLabelSelect{ 
+    color: #337ab7;    
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    padding: 8px; 
+    border-bottom: 1px solid #e2e2e2;
+}
+
+.modalInputSelect{
+    margin: 0 20px 8px 0;
+    padding: 4px; 
+    border: 0px solid;
+    border-bottom: 1px solid #c0c0c0;
+    background: none;
+
+}
+
+.modalInput{
+    margin: 0 20px 8px 42px;
+    padding: 4px; 
+    border: 0px solid;
+    border-bottom: 1px solid #c0c0c0;
+    width: 50%;
+    background: none;
+}
+
+.modalInput:focus {
+    outline: none;
+    border: none;
+}
+
+.modalLabelFor1{ 
+    color: #337ab7;    
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    border-bottom: 1px solid #e2e2e2;
+    width: 60%;
+}
+
+.modalInputFor1{
+    margin: 0 0 8px 0;
+    padding: 4px; 
+    border: 0px solid;
+    border-bottom: 1px solid #c0c0c0;
+    width: 60%;
+    background: none;
+}
+
+.modalLabelForEven2{ 
+    color: #337ab7;    
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0 25px 8px 0;
+    padding: 0 0 8px 0; 
+    border-bottom: 1px solid #e2e2e2;
+    width: 50%;
+}
+
+.modalInputForEven2{
+    margin: 0 25px 4px 0;
+    padding: 0 0 4px 0; 
+    border: 0px solid;
+    border-bottom: 1px solid #c0c0c0;
+    width: 50%;
+    background: none;
+}
+
+.viewLabel{ 
+    color: #337ab7;    
+    font-size: 15px;
+    font-weight: bold;
+    margin: 5px 0 0;
+    padding: 5px; 
+    width: 30%;
+    text-align: left;
+}
+
+.viewData, .viewColon{
+    margin: 5px 0 0;
+    padding: 5px; 
 }
 

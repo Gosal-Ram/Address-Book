@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
-    <header class="d-flex p-1 align-items-center">
+    <header class="d-flex p-1 align-items-center fixed-top">
         <div class="nameTxtContainer ms-4">
             <img src="./assets/images/contact-book.png" alt="" width="45" height="45">
             <span class="headerHeadingName">ADDRESS BOOK</span>    
@@ -31,21 +31,29 @@
             </div>
             <div class="rightFlexLogin ">
                 <h3 class="text-center rightFlexHeading">LOGIN</h3>
-                <form class="d-flex flex-column">
-                    <input type="text" name="fullName" id="fullName" class="formInput" placeholder="Username">
-                    <input type="password" name="pwd1" id="pwd1" class="formInput" placeholder="Password">
+                <form class="d-flex flex-column"  method="POST">
+                    <input type="text" name="userName" id="userName" class="formInput" placeholder="Username">
+                    <input type="password" name="pwd" id="pwd" class="formInput" placeholder="Password">
                     <input type="submit" name="submit"  class="registerBtn" value="Login">
                 </form>
+                <cfif structKeyExists(form,"submit")>  
+                    <cfset local.value = createObject("component","component.index")>
+                    <cfset local.result = local.value.logIn(form.userName,form.pwd)>
+                    <span class="text-danger ms-5">
+                        <cfdump var = "#local.result#">
+                    </span>
+                </cfif>   
                 <div class="text-center">
                     <div class="my-3 text-secondary loginFooterTxt">Or Sign In Using</div>
                     <div class="d-flex align-items-center justify-content-center">
                         <a href="" class="mx-2"><img src="./assets/images/facebook-icon.png" alt="" width="50" height="50"></a>
                         <a href="" class="mx-2"><img src="./assets/images/google-icon.png" alt="" width="45" height="45"></a>
                     </div>
-                    <div class="my-3 loginFooterTxt">Don't have a account <a href="" class="text-decoration-none ">Register here</a></div>
+                    <div class="my-3 loginFooterTxt">Don't have a account <a href="index.cfm" class="text-decoration-none ">Register here</a></div>
                 </div>
             </div>
         </div>
     </main>
+    <script src="./assets/js/script.js"></script>
 </body>
 </html>

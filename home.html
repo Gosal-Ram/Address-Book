@@ -3,111 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Address Book Home Page</title>
+    <title>Address Book Sign In Page</title>
     <link rel="stylesheet" href="../../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
-    <script src="../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/js/bootstrap.min.js"></script>
 </head>
-<body>
-    <header class="d-flex p-1 align-items-center">
+<body class="mb-5">
+    <header class="d-flex p-1 align-items-center fixed-top">
         <div class="nameTxtContainer ms-4">
             <img src="./assets/images/contact-book.png" alt="" width="45" height="45">
             <span class="headerHeadingName">ADDRESS BOOK</span>    
         </div>
         <div class="ms-auto d-flex me-5">
+            <div class="signUpCont mx-4">
+                <img src="./assets/images/user.png" alt="" width="18" height="18" class="headerImg2">
+                <a class="btn text-light" href="index.cfm">Sign Up</a>
+            </div>
             <div class="loginCont">
                 <img src="./assets/images/exit.png" alt="" width="18" height="18">
-                <a class="btn text-light"  href="Login.cfm">Logout</a>
+                <a class="btn text-light"  href="Login.cfm">Login</a>
             </div>
         </div>
     </header>
-    <main class="mx-auto homeMain">
-        <div class="homeTopContainer bg-light my-2 p-3 px-5 rounded">
-            <div class="homeTopImgCont d-flex justify-content-end ">
-                <a href=""><img class="me-2" src="./assets/images/pdf-icon.png" alt="" width="30" height="30"></a>
-                <a href=""><img class="ms-2" src="./assets/images/excel-icon.png" alt="" width="30" height="30"></a>
-                <a href=""><img class="ms-3" src="./assets/images/printer-icon.png" alt="" width="30" height="30"></a>
+    <main>
+        <div class="mainDiv mt-5 bg-light mx-auto shadow-lg">
+            <div class="leftFlex d-flex justify-content-center">
+                <img src="./assets/images/contact-book.png" alt="" width="110" height="110" class="m-auto">
             </div>
-        </div>
-        <div class="homeMainContainer d-flex my-2">
-            <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
-                <img src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
-                <h5 class="fullNameTxt">Merlin Richard</h5>
-                <button class="createBtn">CREATE CONTACT</button>
-            </div>
-            <div class="homeRightFlex bg-light">
-                <table class="table align-middle table-hover">
-                    <tbody> 
-                      <tr class="border-bottom tableHeading">
-                        <th scope="col"></th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Email id</th>
-                        <th scope="col">Phone number</th>
-                      </tr>
-                      <tr>
-                        <th scope="row"><img src="./assets/images/user-grey-icon.png" alt="" width="50" height="50"></th>
-                        <td>Anjana S</td>
-                        <td>anjana@gmail.com</td>
-                        <td>1234567890</td>
-                        <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="#editBtn">EDIT</button></td>
-                        <td><button class="">DELETE</button></td>
-                        <td><button class="">VIEW</button></td>
-                      </tr>
-                    </tbody>
-                </table>
+            <div class="rightFlex ">
+                <h3 class="text-center rightFlexHeading">SIGN UP</h3>
+                <form method = "post" class="d-flex flex-column" enctype="multipart/form-data">
+                    <input type="text" name="fullName" id="fullName" class="formInput" placeholder="Full Name">
+                    <input type="mail" name="emailId" id="emailId" class="formInput" placeholder="Email ID">
+                    <input type="text" name="userName" id="userName" class="formInput" placeholder="Username">
+                    <input type="password" name="pwd1" id="pwd1" class="formInput" placeholder="Password">
+                    <input type="password" name="pwd2" id="pwd2" class="formInput" placeholder="Confirm Password">
+                    <label for="file" class="ms-3">Upload Profile picture</label>
+                    <input type="file" name="profilePic" id="profilePic" class="fileInput">
+                    <input type="submit" name="submit"  class="registerBtn" value="Register">
+                </form>
+               <cfoutput>
+                    <cfif structKeyExists(form, "submit")>
+                        <cfset local.value = createObject("component","component.index")>
+                        <cfset local.result = local.value.signUp(form.fullName,form.emailId,form.userName,form.pwd1,form.profilePic)>
+                        <span class="text-info ms-5 fs-6">#local.result#</span>                
+                    </cfif>
+                </cfoutput> 
             </div>
         </div>
     </main>
-    <div class="modal fade" id="editBtn" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-body d-flex">
-                <div class="modalLeftFlex bg-light ms-2">
-                    <div class="modalLeftFlexCont">
-                        <div class="modalTitle">
-                            EDIT CONTACT
-                        </div>
-                    </div>
-                </div>
-                <div class="modalRightFlex">
-                    <!-- <div class="mx-auto mt-5 bg-light">
-                        <img src="./assets/images/user-grey-icon.png" alt="" width="15" height="15">
-                    </div> -->
-                </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Understood</button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <script src="./assets/js/script.js"></script>
 </body>
 </html>
-
-
-
-<!-- Button trigger modal 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    Launch static backdrop modal
-  </button>
-  
-  Modal
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Understood</button>
-        </div>
-      </div>
-    </div>
-  </div>
--->
