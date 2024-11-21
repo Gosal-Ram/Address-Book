@@ -54,12 +54,7 @@
             <cfset session.userName = queryUserLogin.userName>
             <cfset session.fullName = queryUserLogin.fullname>
             <cfset session.profilePic = queryUserLogin.profilePic>
-<!---            
-            <cfquery name="queryGetContacts">
-                SELECT contactid, firstname, lastname, contactprofile, email, phone
-                FROM cfcontactDetails
-                WHERE _createdBy = <cfqueryparam value = "#session.userName#" cfsqltype="cf_sql_varchar">
-            </cfquery>  --->
+          
             <cflocation  url = "Home.cfm" addToken="no">  
         </cfif>
         <cfreturn local.result>
@@ -81,7 +76,10 @@
         <cfargument type="string" required="true" name="email">
         <cfargument type="string" required="true" name="mobile">
 
-        <cfset local.result = "">
+        <cfset local.result = true>
+        <cfset local.path = expandPath("./assets/contactImages")>
+        <cffile  action="upload" destination = "#local.path#" nameConflict="makeUnique">
+        <cfset local.file = cffile.clientFile>
         <cfquery name="queryInsertContact" datasource="database_gosal">
             INSERT INTO cfcontactDetails(nameTitle,firstname,lastname,gender,dateofbirth,contactprofile,address,street,district,state,country,pincode,email,mobile,_createdBy) 
             VALUES (<cfqueryparam value = "#arguments.nameTitle#" cfsqltype="CF_SQL_VARCHAR">,
@@ -89,7 +87,7 @@
                 <cfqueryparam value = "#arguments.lastname#" cfsqltype="CF_SQL_VARCHAR">,
                 <cfqueryparam value = "#arguments.gender#" cfsqltype="CF_SQL_VARCHAR">,
                 <cfqueryparam value = "#arguments.dob#" cfsqltype="CF_SQL_VARCHAR">,
-                <cfqueryparam value = "#arguments.contactprofile#" cfsqltype="CF_SQL_VARCHAR">,
+                <cfqueryparam value = "#local.file#" cfsqltype="CF_SQL_VARCHAR">,
                 <cfqueryparam value = "#arguments.address#" cfsqltype="CF_SQL_VARCHAR">,
                 <cfqueryparam value = "#arguments.street#" cfsqltype="CF_SQL_VARCHAR">,
                 <cfqueryparam value = "#arguments.district#" cfsqltype="CF_SQL_VARCHAR">,
@@ -101,7 +99,17 @@
                 <cfqueryparam value = "#session.userName#" cfsqltype="CF_SQL_VARCHAR">)
         </cfquery>
         <cfset local.result = "contact created succesfully">
+        <cflocation  url="./Home.cfm" addToken="no">
         <cfreturn local.result>
+    </cffunction>
+
+    <cffunction  name="fetchContact">
+        <cfquery name="local.queryGetContacts">
+            SELECT contactid, firstname, lastname, contactprofile, email, mobile
+            FROM cfcontactDetails
+            WHERE _createdBy = <cfqueryparam value = "#session.userName#" cfsqltype="cf_sql_varchar">
+        </cfquery> 
+        <cfreturn local.queryGetContacts>
     </cffunction>
 
 

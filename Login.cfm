@@ -31,7 +31,7 @@
             </div>
             <div class="rightFlexLogin ">
                 <h3 class="text-center rightFlexHeading">LOGIN</h3>
-                <form class="d-flex flex-column"  method="POST">
+                <form class="d-flex flex-column" method="POST">
                     <input type="text" name="userName" id="userName" class="formInput" placeholder="Username">
                     <input type="password" name="pwd" id="pwd" class="formInput" placeholder="Password">
                     <input type="submit" name="submit"  class="registerBtn" value="Login">

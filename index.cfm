@@ -41,7 +41,7 @@
                     <input type="file" name="profilePic" id="profilePic" class="fileInput">
                     <input type="submit" name="submit"  class="registerBtn" value="Register">
                 </form>
-               <cfoutput>
+                <cfoutput>
                     <cfif structKeyExists(form, "submit")>
                         <cfset local.value = createObject("component","component.index")>
                         <cfset local.result = local.value.signUp(form.fullName,form.emailId,form.userName,form.pwd1,form.profilePic)>

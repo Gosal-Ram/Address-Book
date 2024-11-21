@@ -11,7 +11,9 @@
 </head>
 <body>
   <cfoutput>
-      <header class="d-flex p-1 align-items-center">
+      <cfif structKeyExists(session, "isLoggedIn")>
+
+              <header class="d-flex p-1 align-items-center">
           <div class="nameTxtContainer ms-4">
               <img src="./assets/images/contact-book.png" alt="" width="45" height="45">
               <span class="headerHeadingName">ADDRESS BOOK</span>    
@@ -46,6 +48,8 @@
                   <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
               </div>
               <div class="homeRightFlex bg-light">
+                <cfset local.value = createObject("component","component.index")>
+                <cfset local.result =  local.value.fetchContact()>
                   <table class="table align-middle table-hover table-borderless">
                       <thead>
                         <tr class="border-bottom tableHeading">
@@ -59,15 +63,17 @@
                         </tr>
                       </thead>
                       <tbody> 
+                      <cfloop query="local.result">
                         <tr>
-                          <th scope="row"><img src="./assets/images/user-grey-icon.png" alt="" width="50" height="50"></th>
-                          <td>Anjana S</td>
-                          <td>anjana@gmail.com</td>
-                          <td>1234567890</td>
+                          <th scope="row"><img src="./assets/contactImages/#contactprofile#" alt="" width="50" height="50"></th>
+                          <td>#firstname# #lastname#</td>
+                          <td>#email#</td>
+                          <td>#mobile#</td>
                           <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact()">EDIT</button></td>
                           <td><button class="">DELETE</button></td>
                           <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##viewBtn">VIEW</button></td>
                         </tr>
+                      </cfloop>
                       </tbody>
                   </table>
               </div>
@@ -168,6 +174,7 @@
           <cfset local.value = createObject("component","component.index")>
           <cfset local.result = local.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
           form.address,form.street,form.district,form.state,form.country,form.pincode,form.email,form.mobile)>
+
           <span class="text-success ms-5 fs-6">#local.result#</span>                
       </cfif>
         <!-- view modal -->
@@ -229,6 +236,9 @@
             </div>
           </div>
       </div>
+      </cfif>
+
+
       <script src="./assets/js/script.js"></script>
   </cfoutput>
 </body>
