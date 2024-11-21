@@ -21,7 +21,7 @@
           <div class="ms-auto d-flex me-5">
               <div class="loginCont">
                   <img src="./assets/images/exit.png" alt="" width="18" height="18">
-                  <a class="btn text-light"  href="Login.cfm">Logout</a>
+                  <a class="btn text-light" onClick="return logOut()">Logout</a>
               </div>
           </div>
       </header>
@@ -70,7 +70,7 @@
                           <td>#email#</td>
                           <td>#mobile#</td>
                           <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact()">EDIT</button></td>
-                          <td><button class="">DELETE</button></td>
+                          <td><button type="button" class="" value="#contactid#" onClick="deletePage(this)">DELETE</button></td>
                           <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##viewBtn">VIEW</button></td>
                         </tr>
                       </cfloop>

@@ -112,7 +112,18 @@
         <cfreturn local.queryGetContacts>
     </cffunction>
 
+    <cffunction  name="logOut" access="remote">
+<!---        <cfset structDelete(session,"username")>  --->
+       <cfset structClear(session)>
+    </cffunction>
 
+    <cffunction  name="deletePage" retunType="boolean" access="remote">
+        <cfargument  name="contactid" required ="true">
+        <cfquery name= "queryDeletePage">
+            DELETE FROM cfcontactDetails WHERE contactid = <cfqueryparam value = "#arguments.contactid#" cfsqltype="CF_SQL_INTEGER">
+        </cfquery>
+        <cfreturn true>
+    </cffunction>
 
 
 

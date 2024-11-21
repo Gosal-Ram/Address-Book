@@ -2,12 +2,12 @@
     <cfset this.name = "addressbook">
     <cfset this.sessionManagement = "true">
     <cfset this.dataSource = "database_gosal">
-<!---     <cffunction  name="onRequest"> 
+    <cffunction  name="onRequest"> 
         <cfargument  name="requestPage">
-        <cfif structKeyExists(session, "userDetails") OR requestPage EQ "/gosal/Task qns/Qn28/Signup.cfm">
+        <cfif structKeyExists(session, "username") OR requestPage EQ "/gosal/Address book/index.cfm">
             <cfinclude  template="#arguments.requestPage#">
         <cfelse>
-            <cfinclude  template = "/gosal/Task qns/Qn28/Login.cfm">
+            <cfinclude  template = "/gosal/Address book/Login.cfm">
         </cfif>
-    </cffunction>--->
+    </cffunction>
 </cfcomponent>
