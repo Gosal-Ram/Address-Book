@@ -31,15 +31,17 @@
             </div>
             <div class="rightFlexLogin ">
                 <h3 class="text-center rightFlexHeading">LOGIN</h3>
-                <form class="d-flex flex-column" method="POST">
+                <form class="d-flex flex-column" method="POST" onsubmit = "return loginValidate()">
                     <input type="text" name="userName" id="userName" class="formInput" placeholder="Username">
+                    <span class="ms-5 text-danger fw-bold" id="userNameError"></span>
                     <input type="password" name="pwd" id="pwd" class="formInput" placeholder="Password">
+                    <span class="ms-5 text-danger fw-bold" id="pwdError"></span>
                     <input type="submit" name="submit"  class="registerBtn" value="Login">
                 </form>
                 <cfif structKeyExists(form,"submit")>  
                     <cfset local.value = createObject("component","component.index")>
                     <cfset local.result = local.value.logIn(form.userName,form.pwd)>
-                    <span class="text-danger ms-5">
+                    <span class="text-danger fw-bold ms-5">
                         <cfdump var = "#local.result#">
                     </span>
                 </cfif>   
