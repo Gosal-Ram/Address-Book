@@ -35,16 +35,8 @@
           </div>
           <div class="homeMainContainer d-flex my-2">
               <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
-                  <cfif StructKeyExists(session, "profilePic")>
-                    <img src="./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
-                  <cfelse>
-                    <img src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
-                  </cfif>
-                  <cfif StructKeyExists(session, "fullName")>
-                    <h5 class="fullNameTxt">#session.fullName#</h5>
-                  <cfelse>
-                    <h5 class="fullNameTxt">Full Name</h5>
-                  </cfif>
+                  <img src = "./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
+                  <h5 class="fullNameTxt">#session.fullName#</h5>
                   <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
               </div>
               <div class="homeRightFlex bg-light">
@@ -69,9 +61,9 @@
                           <td>#firstname# #lastname#</td>
                           <td>#email#</td>
                           <td>#mobile#</td>
-                          <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact()">EDIT</button></td>
-                          <td><button type="button" class="" value="#contactid#" onClick="deletePage(this)">DELETE</button></td>
-                          <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##viewBtn">VIEW</button></td>
+                          <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact('#contactid#')">EDIT</button></td>
+                          <td><button type="button" class="" onClick="deleteContact('#contactid#')">DELETE</button></td>
+                          <td><button type="button" class="" data-bs-toggle="modal" data-bs-target="##viewBtn" onClick="viewContact('#contactid#')">VIEW</button></td>
                         </tr>
                       </cfloop>
                       </tbody>
@@ -91,14 +83,14 @@
                             EDIT CONTACT
                         </div>
                         <h3 class="modalTiltle2">Personal Contact</h3>
-                        <form method="POST" enctype="multipart/form-data">
+                        <form method="POST" enctype="multipart/form-data" id="contactform">
                           <div class="d-flex justify-content-between">
                             <label class="modalLabelSelect">Title*</label>
                             <label class="modalLabel">First Name*</label>
                             <label class="modalLabel">Last Name*</label>
                           </div>
                           <div class="d-flex justify-content-between">
-                            <select class="modalInputSelect" name="nameTitle">
+                            <select class="modalInputSelect" name="nameTitle" id="nameTitle">
                               <option></option>
                               <option>Mr.</option>
                               <option>Ms.</option>
@@ -111,7 +103,7 @@
                             <label class="modalLabelFor2">Date Of Birth*</label>
                           </div>
                           <div class="d-flex justify-content-between">
-                            <select class="modalInputSelect" name="gender">
+                            <select class="modalInputSelect" name="gender" id="gender" >
                               <option>Male</option>
                               <option>Female</option>
                             </select>
@@ -158,7 +150,7 @@
                   </div>
                   <div class="modalRightFlex">
                       <div class="mt-5 ms-5 bg-light">
-                        <img src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
+                        <img id="contactProfileEdit" src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
                       </div>
                   </div>
               </div>
@@ -190,37 +182,37 @@
                         <div class="d-flex">
                           <div class="viewLabel">Name</div>
                           <div class="viewColon">:</div>
-                          <div class="viewData">Miss. Anjana S</div>
+                          <div class="viewData" id="fullNameView">Miss. Anjana S</div>
                         </div>
                         <div class="d-flex">
                           <div class="viewLabel">Gender</div>
                           <div class="viewColon">:</div>
-                          <div class="viewData">Female</div>
+                          <div class="viewData" id="genderView">Female</div>
                         </div>
                         <div class="d-flex">
                           <div class="viewLabel">DOB</div>
                           <div class="viewColon">:</div>
-                          <div class="viewData">12-05-2021</div>
+                          <div class="viewData" id="dobView">12-05-2021</div>
                         </div>
                         <div class="d-flex">
                           <div class="viewLabel">Address</div>
                           <div class="viewColon">:</div>
-                          <div class="viewData">35,East Car Street,Nagercoil,TamilNadu,India</div>
+                          <div class="viewData" id="addressView">35,East Car Street,Nagercoil,TamilNadu,India</div>
                         </div>
                         <div class="d-flex">
                           <div class="viewLabel">Pincode</div>
                           <div class="viewColon">:</div>
-                          <div class="viewData">629001</div>
+                          <div class="viewData" id="pincodeView">629001</div>
                         </div>
                         <div class="d-flex">
                           <div class="viewLabel">Email Id</div>
                           <div class="viewColon">:</div>
-                          <div class="viewData">anjana@gamil.com</div>
+                          <div class="viewData" id="emailView">anjana@gamil.com</div>
                         </div>
                         <div class="d-flex">
                           <div class="viewLabel">Phone</div>
                           <div class="viewColon">:</div>
-                          <div class="viewData">1234567895</div>
+                          <div class="viewData" id="mobileView">1234567895</div>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
                           <button type="button" class="btn createBtn" data-bs-dismiss="modal">Close</button>
@@ -229,7 +221,7 @@
                   </div>
                   <div class="modalRightFlex">
                       <div class="mt-5 ms-5 bg-light">
-                          <img src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
+                          <img id="conatctProfileView" src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
                       </div>
                   </div>
               </div>
