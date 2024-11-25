@@ -167,7 +167,7 @@ function signInValidate(){
         isValid = false;
     }
     return isValid
-    }
+}
 
 function modalValidate() {
 
@@ -285,7 +285,7 @@ function modalValidate() {
     }
     
     return isValid;
-    }
+}
 
 function exportPrint(){
     // alert("hel")
