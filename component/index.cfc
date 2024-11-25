@@ -12,6 +12,7 @@
             SELECT COUNT(userName) AS count
             FROM cfuser 
             WHERE userName = <cfqueryparam value = "#arguments.userName#" cfsqltype="CF_SQL_VARCHAR">
+            OR emailId = <cfqueryparam value="#arguments.emailId#" cfsqltype="CF_SQL_VARCHAR">
         </cfquery>
         <cfif queryUserCheck.count>
             <cfset local.result = "user name already exists">
@@ -31,7 +32,7 @@
                             <cfqueryparam value = "#local.encryptedPass#" cfsqltype="CF_SQL_VARCHAR">,
                             <cfqueryparam value = "#local.imagePath#" cfsqltype="CF_SQL_VARCHAR">)
                 </cfquery>
-                <cfset local.result = "data added to the database">
+                <cfset local.result = "user created successfully">
         </cfif>
         <cfreturn local.result>
     </cffunction>
@@ -82,8 +83,16 @@
 
         <cfset local.result = true>
         <cfif arguments.contactProfile =="">
-            <cfset local.file = "user-grey-icon.png">
-            
+            <cfif structKeyExists(session, "contactId")>
+                <cfquery name="queryFetchContactProfile">
+                    SELECT contactprofile
+                    FROM cfcontactDetails
+                    WHERE contactid = <cfqueryparam value = "#session.contactId#" cfsqltype="CF_SQL_VARCHAR">
+                </cfquery>
+                <cfset local.file = queryFetchContactProfile.contactprofile>  <!--- fetching file name --->
+            <cfelse>
+                <cfset local.file = "user-grey-icon.png">
+            </cfif>
         <cfelse>
             <cfset local.path = expandPath("./assets/contactImages/")>   <!--- path declare--->
             <cffile  action="upload" destination = "#local.path#" nameConflict="makeUnique">  <!--- uploading file in specified path--->
@@ -91,6 +100,7 @@
         </cfif>
         <!---  to check if contact already exists   --->
         <cfif structKeyExists(session, "contactid")>
+            
             <cfquery name="queryInsertEdits">
             UPDATE cfcontactDetails
             SET 
@@ -112,9 +122,8 @@
                 _updatedOn = <cfqueryparam value = "#Now()#" cfsqltype="CF_SQL_TIMESTAMP">
             WHERE 
             contactid = <cfqueryparam value = "#session.contactid#" cfsqltype="CF_SQL_VARCHAR">
-
-
             </cfquery>
+
         <cfelse>
             <cfquery name="queryInsertContact" datasource="database_gosal">
                 INSERT INTO cfcontactDetails(nameTitle,firstname,lastname,gender,dateofbirth,contactprofile,address,street,district,state,country,pincode,email,mobile,_createdBy) 
@@ -150,7 +159,7 @@
     </cffunction>
 
     <cffunction  name="logOut" access="remote">
-<!---        <cfset structDelete(session,"username")>  --->
+                     <!---        <cfset structDelete(session,"username")>  --->
        <cfset structClear(session)>
     </cffunction>
 
@@ -199,18 +208,26 @@
         <cfelse>
             <cfset structDelete(session, "contactId")>
         </cfif>
-<!---    single btn submit prob      --->
-<!--- if session var exists  -> edit --->
-<!--- else its-> create --->
+            <!---    single btn submit prob      --->
+            <!--- if session var exists  -> edit --->
+            <!--- else its-> create --->
+    </cffunction>
+    <cffunction  name="generateExcel" access="remote">
+        <cfquery name="queryForExcel">
+            SELECT nametitle,firstname, lastname,gender,dateofbirth, contactprofile, address,street,district,state,country,pincode, email,mobile
+            FROM cfcontactDetails
+            WHERE _createdBy = <cfqueryparam value = "#session.userName#" cfsqltype="cf_sql_varchar">
+        </cfquery>
+        <cfspreadsheet action="write" filename="../assets/spreadsheets/addressBookcontacts.xlsx" overwrite="true" query="queryForExcel" sheetname="courses"> 
+    </cffunction>
+
+    <cffunction  name="generatePdf" access="public">
+        <cfquery name="local.queryGetContacts">
+            SELECT nametitle,firstname, lastname,gender,dateofbirth, address,street,district,state,country,pincode, email,mobile
+            FROM cfcontactDetails
+            WHERE _createdBy = <cfqueryparam value = "#session.userName#" cfsqltype="cf_sql_varchar">
+        </cfquery> 
+        <cfreturn local.queryGetContacts>
     </cffunction>
 </cfcomponent>
-
-
-
-
-
-
-
-
-
 
