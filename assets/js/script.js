@@ -287,6 +287,15 @@ function modalValidate() {
     return isValid;
 }
 
+function triggerPdf() {
+    const link = document.createElement("a");
+    link.href = "assets/pdfs/contacts.pdf"; 
+    link.download = "book"; 
+    document.body.appendChild(link); 
+    link.click();
+    document.body.removeChild(link); 
+  }
+  
 function exportPrint(){
     // alert("hel")
     $(".btnHide").hide();
