@@ -15,7 +15,7 @@
             OR emailId = <cfqueryparam value="#arguments.emailId#" cfsqltype="CF_SQL_VARCHAR">
         </cfquery>
         <cfif queryUserCheck.count>
-            <cfset local.result = "user name already exists">
+            <cfset local.result = "user name or mail already exists">
         <cfelse>
             <cfif arguments.profilePic =="">
                 <cfset local.imagePath = "user-grey-icon.png">
@@ -45,7 +45,7 @@
         <cfset local.result = "">        
 
         <cfquery name="queryUserLogin" datasource="database_gosal">
-            SELECT userName,pwd,profilePic,fullname
+            SELECT userName,pwd,profilePic,fullname,emailId
             FROM cfuser 
             WHERE userName = <cfqueryparam value = "#arguments.userName#" cfsqltype="CF_SQL_VARCHAR">
         </cfquery>
@@ -59,10 +59,23 @@
             <cfset session.userName = queryUserLogin.userName>
             <cfset session.fullName = queryUserLogin.fullname>
             <cfset session.profilePic = queryUserLogin.profilePic>
+            <cfset session.emailId = queryUserLogin.emailId>
           
             <cflocation  url = "Home.cfm" addToken="no">  
         </cfif>
         <cfreturn local.result>
+    </cffunction>
+
+    <cffunction  name="setContactId" access="remote">
+        <cfargument  name="contactId" required = "true">
+        <cfif len(trim(arguments.contactId))>
+            <cfset session.contactId = arguments.contactId>
+        <cfelse>
+            <cfset structDelete(session, "contactId")>
+        </cfif>
+            <!---    single btn submit prob      --->
+            <!--- if session var exists  -> edit --->
+            <!--- else its-> create --->
     </cffunction>
 
     <cffunction  name="createContact" returnType="any">
@@ -81,7 +94,7 @@
         <cfargument type="string" required="true" name="email">
         <cfargument type="string" required="true" name="mobile">
 
-        <cfset local.result = true>
+        <cfset local.result = "">
         <cfif arguments.contactProfile =="">
             <cfif structKeyExists(session, "contactId")>
                 <cfquery name="queryFetchContactProfile">
@@ -98,70 +111,99 @@
             <cffile  action="upload" destination = "#local.path#" nameConflict="makeUnique">  <!--- uploading file in specified path--->
             <cfset local.file = cffile.clientFile>  <!--- fetching file name --->
         </cfif>
-        <!---  to check if contact already exists   --->
-        <cfif structKeyExists(session, "contactid")>
-            
-        <cfquery name = "queryInsertEdits">
-            UPDATE cfcontactDetails
-            SET nameTitle = < cfqueryparam value = "#arguments.nameTitle#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,firstname = < cfqueryparam value = "#arguments.firstname#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,lastname = < cfqueryparam value = "#arguments.lastname#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,gender = < cfqueryparam value = "#arguments.gender#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,dateofbirth = < cfqueryparam value = "#arguments.dob#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,contactprofile = < cfqueryparam value = "#local.file#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,address = < cfqueryparam value = "#arguments.address#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,street = < cfqueryparam value = "#arguments.street#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,district = < cfqueryparam value = "#arguments.district#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,STATE = < cfqueryparam value = "#arguments.state#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,country = < cfqueryparam value = "#arguments.country#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,pincode = < cfqueryparam value = "#arguments.pincode#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,email = < cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,mobile = < cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,_updatedBy = < cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >
-                ,_updatedOn = < cfqueryparam value = "#Now()#" cfsqltype = "CF_SQL_TIMESTAMP" >
-            WHERE contactid = < cfqueryparam value = "#session.contactid#" cfsqltype = "CF_SQL_VARCHAR" > 
-        </cfquery>
-
-        <cfelse>
-            <cfquery name="queryInsertContact" datasource="database_gosal">
-                INSERT INTO cfcontactDetails (
-                    nameTitle
-                    ,firstname
-                    ,lastname
-                    ,gender
-                    ,dateofbirth
-                    ,contactprofile
-                    ,address
-                    ,street
-                    ,district
-                    ,STATE
-                    ,country
-                    ,pincode
-                    ,email
-                    ,mobile
-                    ,_createdBy
-                    )
-                VALUES (
-                    < cfqueryparam value = "#arguments.nameTitle#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.firstname#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.lastname#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.gender#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.dob#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#local.file#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.address#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.street#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.district#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.state#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.country#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.pincode#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >
-                    ,< cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >
-                    )
+        <!---     to check unique mobile and email     --->
+        <!---       to check for create and edit 
+                 if contactid exists => edit
+                  else create      --->
+        <cfif structKeyExists(session, "contactId")>
+            <cfquery name = "queryCheckUnique">
+                SELECT email,mobile,contactid
+                FROM cfcontactDetails
+                WHERE (email= <cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" > OR 
+                        mobile= <cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >) AND
+                        _createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" > AND
+                        NOT contactid = <cfqueryparam value = "#session.contactId#" cfsqltype = "CF_SQL_VARCHAR">  
             </cfquery>
-            <cfset local.result = "contact created succesfully">
+        <cfelse>
+            <cfquery name = "queryCheckUnique">
+                SELECT email,mobile
+                FROM cfcontactDetails
+                WHERE (email= <cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" > OR 
+                        mobile= <cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >) AND
+                        _createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >            
+            </cfquery>
         </cfif>
-        <cflocation  url="./Home.cfm" addToken="no">
+
+        <cfif queryRecordCount(queryCheckUnique) GT 0 OR arguments.email EQ session.emailId>
+            <cfset local.result ="mobile number or email already exists">
+        <cfelse>
+            <!---  to check if contact already exists  =>EDIT(UPDATE) --->
+            <cfif structKeyExists(session, "contactid")>
+                
+                <cfquery name = "queryInsertEdits">
+                    UPDATE cfcontactDetails
+                    SET nameTitle = < cfqueryparam value = "#arguments.nameTitle#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,firstname = < cfqueryparam value = "#arguments.firstname#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,lastname = < cfqueryparam value = "#arguments.lastname#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,gender = < cfqueryparam value = "#arguments.gender#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,dateofbirth = < cfqueryparam value = "#arguments.dob#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,contactprofile = < cfqueryparam value = "#local.file#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,address = < cfqueryparam value = "#arguments.address#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,street = < cfqueryparam value = "#arguments.street#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,district = < cfqueryparam value = "#arguments.district#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,STATE = < cfqueryparam value = "#arguments.state#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,country = < cfqueryparam value = "#arguments.country#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,pincode = < cfqueryparam value = "#arguments.pincode#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,email = < cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,mobile = < cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,_updatedBy = < cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,_updatedOn = < cfqueryparam value = "#Now()#" cfsqltype = "CF_SQL_TIMESTAMP" >
+                    WHERE contactid = < cfqueryparam value = "#session.contactid#" cfsqltype = "CF_SQL_VARCHAR" > 
+                </cfquery>
+                <cfset local.result = "contact edited succesfully">
+                <!---  =>CREATE NEW CONTACT(INSERT) --->
+            <cfelse>
+                <cfquery name="queryInsertContact" datasource="database_gosal">
+                    INSERT INTO cfcontactDetails (
+                        nameTitle
+                        ,firstname
+                        ,lastname
+                        ,gender
+                        ,dateofbirth
+                        ,contactprofile
+                        ,address
+                        ,street
+                        ,district
+                        ,STATE
+                        ,country
+                        ,pincode
+                        ,email
+                        ,mobile
+                        ,_createdBy
+                        )
+                    VALUES (
+                        < cfqueryparam value = "#arguments.nameTitle#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.firstname#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.lastname#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.gender#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.dob#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#local.file#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.address#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.street#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.district#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.state#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.country#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.pincode#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >
+                        ,< cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >
+                        )
+                </cfquery>
+                <cfset local.result = "contact created succesfully">
+            </cfif>
+        </cfif>
+
+        <!---         <cflocation  url="./Home.cfm" addToken="no"> --->
         <cfreturn local.result>
     </cffunction>
 
@@ -235,18 +277,6 @@
         <cfset local.contactDetails["mobile"] = queryViewPage.mobile>
 
         <cfreturn local.contactDetails>
-    </cffunction>
-
-    <cffunction  name="setContactId" access="remote">
-        <cfargument  name="contactId" required = "true">
-        <cfif len(trim(arguments.contactId))>
-            <cfset session.contactId = arguments.contactId>
-        <cfelse>
-            <cfset structDelete(session, "contactId")>
-        </cfif>
-            <!---    single btn submit prob      --->
-            <!--- if session var exists  -> edit --->
-            <!--- else its-> create --->
     </cffunction>
 
     <cffunction  name="generateExcel" access="remote">

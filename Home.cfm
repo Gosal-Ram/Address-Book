@@ -25,11 +25,19 @@
       </header>
       <main class="mx-auto homeMain">
           <div class="homeTopContainer bg-light my-2 p-3 px-5 rounded">
+                <div>
+                  <cfif structKeyExists(form, "submitBtn")>  
+                      <cfset local.value = createObject("component","component.index")>
+                      <cfset local.result = local.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
+                      form.address,form.street,form.district,form.state,form.country,form.pincode,form.email,form.mobile)>
+                      <span class="text-success fw-bold ms-5 fs-6">#local.result#</span>                
+                  </cfif>
+                </div>
               <div class="homeTopImgCont d-flex justify-content-end ">
-              <form name="create Pdf " method="POST" >
-                  <button type="submit" name="exportPdfBtn" class="pdfBtn"><img class="me-2" src="./assets/images/pdf-icon.png" alt="" width="30" height="30"></button>
-              </form>
-                  <a href="" onclick="exportExcel()"><img class="ms-2" src="./assets/images/excel-icon.png" alt="" width="30" height="30"></a>
+                  <form name="create Pdf " method="POST" >
+                      <button type="submit" name="exportPdfBtn" class="pdfBtn" onclick="triggerPdf()" id="downloadPdfBtn"><img class="me-2" src="./assets/images/pdf-icon.png" alt="" width="30" height="30"></button>
+                  </form>
+                  <a href="./assets/spreadsheets/addressBookcontacts.xlsx" download="contactsSpreadsheet" onclick="exportExcel()"><img class="ms-2" src="./assets/images/excel-icon.png" alt="" width="30" height="30"></a>
                   <a href="" onclick="exportPrint()"><img class="ms-3" src="./assets/images/printer-icon.png" alt="" width="30" height="30"></a>
               </div>
           </div>
@@ -187,12 +195,7 @@
           </div>
       </form>
       </div>
-       <cfif structKeyExists(form, "submitBtn")>  
-          <cfset local.value = createObject("component","component.index")>
-          <cfset local.result = local.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
-          form.address,form.street,form.district,form.state,form.country,form.pincode,form.email,form.mobile)>
-          <span class="text-success ms-5 fs-6">#local.result#</span>                
-      </cfif>
+
         <!-- view modal -->
         <div class="modal fade" id="viewBtn" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
           <div class="modal-dialog">
