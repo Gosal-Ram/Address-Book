@@ -51,7 +51,7 @@
                     <cfif structKeyExists(form, "submit")>
                         <cfset local.value = createObject("component","component.index")>
                         <cfset local.result = local.value.signUp(form.fullName,form.emailId,form.userName,form.pwd1,form.profilePic)>
-                        <span class="text-info ms-5 fs-6">#local.result#</span>                
+                        <span class="text-info ms-5 fs-6 text-center">#local.result#</span>                
                     </cfif>
                 </cfoutput> 
             </div>

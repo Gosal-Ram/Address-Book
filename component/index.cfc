@@ -322,5 +322,39 @@
         </cfquery> 
         <cfreturn local.queryGetContacts>
     </cffunction>
+
+    <cffunction  name="mailBdayContacts">
+        <cfset local.month = Month(now())>
+        <cfset local.day = Day(now())>
+        <cfquery name="getTodayBirthdays">
+            SELECT firstname,lastname, email,_createdBy
+            FROM cfcontactDetails
+            WHERE MONTH(dateofbirth) = <cfqueryparam value = "#local.month#" cfsqltype="CF_SQL_VARCHAR">
+            AND DAY(dateofbirth) = <cfqueryparam value = "#local.day#" cfsqltype="CF_SQL_VARCHAR">
+        </cfquery>
+
+
+        <cfif getTodayBirthdays.recordcount gt 0>
+            <cfloop query="getTodayBirthdays">
+                <cfmail to="#email#" from="gosalram008@gmail.com" subject="Happy Birthday, #firstname#!">
+                    Dear #firstname#,
+
+                    Wishing you a very Happy Birthday! 
+                    
+                    Regards,#_createdBy#
+                    
+                </cfmail>
+            </cfloop>
+        </cfif>
+
+
+
+
+
+
+
+
+        <cfreturn getTodayBirthdays>
+    </cffunction>
 </cfcomponent>
 

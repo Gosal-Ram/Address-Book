@@ -44,7 +44,7 @@
         <div class="homeMainContainer d-flex my-2">
           <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
             <img src = "./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
-            <h5 class="fullNameTxt">#session.fullName#</h5>
+            <h5 class="fullNameTxt mt-2">#session.fullName#</h5>
             <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
           </div>
           <div class="homeRightFlex bg-light" id="homeRightFlex">
