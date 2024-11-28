@@ -7,7 +7,7 @@ function createContact(event){
     $.ajax({
         type:"POST",
         url: "component/index.cfc?method=setContactId",
-        data:{contactid: ""}, 
+        data:{contactid: ""}, // setting contact id null
     })
 }
 
