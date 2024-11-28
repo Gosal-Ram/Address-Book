@@ -142,6 +142,7 @@ input:focus{
 .fullNameTxt{
     font-weight: bold;
     color: #337ab7;
+    text-wrap: nowrap;
 }
 .createBtn{
     border: 1px solid #337ab7;
