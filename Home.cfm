@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Address Book Home Page</title>
-    <link rel="stylesheet" href="../../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
-    <script src="../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/js/bootstrap.min.js"></script>
+    <script src="bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
   <cfoutput>
@@ -42,7 +42,11 @@
         </div>
         <div class="homeMainContainer d-flex my-2">
           <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
-            <img src = "./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
+            <cfif structKeyExists(session, "profilePicFromGoogle")>
+              <img src = "#session.profilePicFromGoogle#" alt="" width="100" height="100">
+            <cfelse>
+              <img src = "./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
+            </cfif>
             <h5 class="fullNameTxt mt-2">#session.fullName#</h5>
             <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
           </div>

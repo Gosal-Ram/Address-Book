@@ -350,5 +350,38 @@
         <cfreturn getTodayBirthdays>
     </cffunction>
 
+    <cffunction  name="googleSignIn" access="public">
+        <cfargument  name="email" type="string" required="true">
+        <cfargument  name="fullname" type="string" required="true">
+        <cfargument  name="image" type="string" required="true">
+
+        <cfset session.fullName = arguments.fullname>
+        <cfset session.username = arguments.email>
+        <cfset session.emailId = arguments.email>
+        <cfset session.isLoggedIn = true>
+        <cfset session.profilePicFromGoogle = arguments.image>
+        <cfset local.result = "">
+        <cfquery name="queryUserCheck" datasource="database_gosal">
+            SELECT COUNT(userName) AS count
+            FROM cfuser 
+            WHERE userName = <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">
+            OR emailId = <cfqueryparam value="#arguments.email#" cfsqltype="CF_SQL_VARCHAR">
+        </cfquery>
+        <cfif queryUserCheck.count>
+            <cfset local.result = "user name or mail already exists">
+        <cfelse>
+            <cfquery name="queryInsert" datasource="database_gosal">
+                INSERT INTO cfuser(fullName,emailId,userName,profilePic) 
+                VALUES (<cfqueryparam value = "#arguments.fullName#" cfsqltype="CF_SQL_VARCHAR">,
+                        <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">,
+                        <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">,
+                        <cfqueryparam value = "#arguments.image#" cfsqltype="CF_SQL_VARCHAR">)
+            </cfquery>
+            <cfset local.result = "user created successfully">
+        </cfif>
+        <cflocation  url = "http://contactbook.com/Home.cfm" addToken="no"> 
+        <cfreturn local.result>
+    </cffunction>
+
 </cfcomponent>
 

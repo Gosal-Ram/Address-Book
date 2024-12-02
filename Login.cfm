@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Address Book Login Page</title>
-    <link rel="stylesheet" href="../../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
@@ -49,7 +49,7 @@
                     <div class="my-3 text-secondary loginFooterTxt">Or Sign In Using</div>
                     <div class="d-flex align-items-center justify-content-center">
                         <a href="" class="mx-2"><img src="./assets/images/facebook-icon.png" alt="" width="50" height="50"></a>
-                        <a href="" class="mx-2"><img src="./assets/images/google-icon.png" alt="" width="45" height="45"></a>
+                        <a href="./GoogleSignIn.cfm" class="mx-2"><img src="./assets/images/google-icon.png" alt="" width="45" height="45"></a>  
                     </div>
                     <div class="my-3 loginFooterTxt">Don't have a account <a href="index.cfm" class="text-decoration-none ">Register here</a></div>
                 </div>

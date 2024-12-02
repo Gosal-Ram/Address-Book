@@ -6,10 +6,10 @@
     <cfset application.value = createObject("component","component.index")>
     <cffunction  name="onRequest"> 
         <cfargument  name="requestPage">
-        <cfif structKeyExists(session, "username") OR requestPage EQ "/gosal/Address book/index.cfm" OR requestPage EQ "/gosal/Address book/demo.cfm">
+        <cfif structKeyExists(session, "username") OR requestPage EQ "/index.cfm" OR requestPage EQ "/demo.cfm" OR requestPage EQ "/GoogleSignIn.cfm">
             <cfinclude  template="#arguments.requestPage#">
         <cfelse>
-            <cfinclude  template = "/gosal/Address book/Login.cfm">
+            <cfinclude  template = "/Login.cfm">
         </cfif>
     </cffunction>
 </cfcomponent>
