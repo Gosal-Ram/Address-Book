@@ -322,5 +322,6 @@
         </cfquery> 
         <cfreturn local.queryGetContacts>
     </cffunction>
+
 </cfcomponent>
 

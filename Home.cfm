@@ -44,7 +44,7 @@
         <div class="homeMainContainer d-flex my-2">
           <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
             <img src = "./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
-            <h5 class="fullNameTxt">#session.fullName#</h5>
+            <h5 class="fullNameTxt mt-2">#session.fullName#</h5>
             <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
           </div>
           <div class="homeRightFlex bg-light" id="homeRightFlex">
@@ -62,16 +62,18 @@
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                <tbody> 
-                <cfloop query="local.result">
+                <tbody>
+                <cfset ormReload()>
+                <cfset local.ormFetchContact = entityLoad("index2" ,{_createdBy = "#session.username#"})> 
+                <cfloop array ="#local.ormFetchContact#" item="item">
                   <tr>
-                    <th scope="row"><img src="./assets/contactImages/#contactprofile#" alt="" width="50" height="50"></th>
-                    <td>#firstname# #lastname#</td>
-                    <td>#email#</td>
-                    <td>#mobile#</td>
-                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact('#contactid#')">EDIT</button></td>
-                    <td><button type="button" class="btnHide" onClick="deleteContact('#contactid#')">DELETE</button></td>
-                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##viewBtn" onClick="viewContact('#contactid#')">VIEW</button></td>
+                    <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="" width="50" height="50"></th>
+                    <td>#item.getfirstname()# #item.getlastname()#</td>
+                    <td>#item.getemail()#</td>
+                    <td>#item.getmobile()#</td>
+                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact('#item.getcontactid()#')">EDIT</button></td>
+                    <td><button type="button" class="btnHide" onClick="deleteContact('#item.getcontactid()#')">DELETE</button></td>
+                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##viewBtn" onClick="viewContact('#item.getcontactid()#')">VIEW</button></td>
                   </tr>
                 </cfloop>
                 </tbody>
