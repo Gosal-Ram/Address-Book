@@ -27,8 +27,7 @@
         <div class="homeTopContainer bg-light my-2 p-3 px-5 rounded">
           <div>
             <cfif structKeyExists(form, "submitBtn")>  
-                <cfset local.value = createObject("component","component.index")>
-                <cfset local.result = local.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
+                <cfset local.result = application.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
                 form.address,form.street,form.district,form.state,form.country,form.pincode,form.email,form.mobile)>
                 <span class="text-success fw-bold ms-5 fs-6">#local.result#</span>                
             </cfif>
@@ -44,12 +43,10 @@
         <div class="homeMainContainer d-flex my-2">
           <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
             <img src = "./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
-            <h5 class="fullNameTxt">#session.fullName#</h5>
+            <h5 class="fullNameTxt mt-2">#session.fullName#</h5>
             <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
           </div>
           <div class="homeRightFlex bg-light" id="homeRightFlex">
-            <cfset local.value = createObject("component","component.index")>
-            <cfset local.result =  local.value.fetchContact()>
             <table class="table align-middle table-hover table-borderless">
                 <thead>
                   <tr class="border-bottom tableHeading">
@@ -62,16 +59,18 @@
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                <tbody> 
-                <cfloop query="local.result">
+                <tbody>
+                <cfset ormReload()>
+                <cfset local.ormFetchContact = entityLoad("addressBookOrm" ,{_createdBy = "#session.username#"})> 
+                <cfloop array ="#local.ormFetchContact#" item="item">
                   <tr>
-                    <th scope="row"><img src="./assets/contactImages/#contactprofile#" alt="" width="50" height="50"></th>
-                    <td>#firstname# #lastname#</td>
-                    <td>#email#</td>
-                    <td>#mobile#</td>
-                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact('#contactid#')">EDIT</button></td>
-                    <td><button type="button" class="btnHide" onClick="deleteContact('#contactid#')">DELETE</button></td>
-                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##viewBtn" onClick="viewContact('#contactid#')">VIEW</button></td>
+                    <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="" width="50" height="50"></th>
+                    <td>#item.getfirstname()# #item.getlastname()#</td>
+                    <td>#item.getemail()#</td>
+                    <td>#item.getmobile()#</td>
+                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##editBtn" onclick = "editContact('#item.getcontactid()#')">EDIT</button></td>
+                    <td><button type="button" class="btnHide" onClick="deleteContact('#item.getcontactid()#')">DELETE</button></td>
+                    <td><button type="button" class="btnHide" data-bs-toggle="modal" data-bs-target="##viewBtn" onClick="viewContact('#item.getcontactid()#')">VIEW</button></td>
                   </tr>
                 </cfloop>
                 </tbody>
@@ -257,8 +256,7 @@
       </div>
 
       <cfif structKeyExists(form, "exportPdfBtn")>
-        <cfset local.pdfObj = createObject("component","component.index")>
-        <cfset local.PdfResult = local.pdfObj.generatePdf()>
+        <cfset local.PdfResult = application.value.generatePdf()>
         <cfdocument format="PDF" filename="assets/pdfs/contacts.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
           <h1>Contact Details Report</h1>
           <p>Generated on: #DateFormat(Now(), 'mm/dd/yyyy')#</p>
