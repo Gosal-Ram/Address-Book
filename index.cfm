@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Address Book Sign In Page</title>
-    <link rel="stylesheet" href="../../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body class="mb-5">
@@ -49,8 +49,7 @@
                 </form>
                 <cfoutput>
                     <cfif structKeyExists(form, "submit")>
-                        <cfset local.value = createObject("component","component.index")>
-                        <cfset local.result = local.value.signUp(form.fullName,form.emailId,form.userName,form.pwd1,form.profilePic)>
+                        <cfset local.result = application.value.signUp(form.fullName,form.emailId,form.userName,form.pwd1,form.profilePic)>
                         <span class="text-info ms-5 fs-6 text-center">#local.result#</span>                
                     </cfif>
                 </cfoutput> 

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Address Book Home Page</title>
-    <link rel="stylesheet" href="../../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
-    <script src="../../bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/js/bootstrap.min.js"></script>
+    <script src="bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
   <cfoutput>
@@ -27,8 +27,7 @@
         <div class="homeTopContainer bg-light my-2 p-3 px-5 rounded">
           <div>
             <cfif structKeyExists(form, "submitBtn")>  
-                <cfset local.value = createObject("component","component.index")>
-                <cfset local.result = local.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
+                <cfset local.result = application.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
                 form.address,form.street,form.district,form.state,form.country,form.pincode,form.email,form.mobile)>
                 <span class="text-success fw-bold ms-5 fs-6">#local.result#</span>                
             </cfif>
@@ -43,13 +42,15 @@
         </div>
         <div class="homeMainContainer d-flex my-2">
           <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
-            <img src = "./assets/userImages/#session.profilePic#" alt="" width="100" height="100">
+            <cfif structKeyExists(session, "profilePicFromGoogle")>
+              <img src = "#session.profilePicFromGoogle#" alt="user profile picture" width="100" height="100">
+            <cfelse>
+              <img src = "./assets/userImages/#session.profilePic#" alt="user profile picture" width="100" height="100">
+            </cfif>
             <h5 class="fullNameTxt mt-2">#session.fullName#</h5>
             <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
           </div>
           <div class="homeRightFlex bg-light" id="homeRightFlex">
-            <cfset local.value = createObject("component","component.index")>
-            <cfset local.result =  local.value.fetchContact()>
             <table class="table align-middle table-hover table-borderless">
                 <thead>
                   <tr class="border-bottom tableHeading">
@@ -64,10 +65,10 @@
                 </thead>
                 <tbody>
                 <cfset ormReload()>
-                <cfset local.ormFetchContact = entityLoad("index2" ,{_createdBy = "#session.username#"})> 
+                <cfset local.ormFetchContact = entityLoad("addressBookOrm" ,{_createdBy = "#session.username#"})> 
                 <cfloop array ="#local.ormFetchContact#" item="item">
                   <tr>
-                    <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="" width="50" height="50"></th>
+                    <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="contact profile picture" width="50" height="50"></th>
                     <td>#item.getfirstname()# #item.getlastname()#</td>
                     <td>#item.getemail()#</td>
                     <td>#item.getmobile()#</td>
@@ -259,8 +260,7 @@
       </div>
 
       <cfif structKeyExists(form, "exportPdfBtn")>
-        <cfset local.pdfObj = createObject("component","component.index")>
-        <cfset local.PdfResult = local.pdfObj.generatePdf()>
+        <cfset local.PdfResult = application.value.generatePdf()>
         <cfdocument format="PDF" filename="assets/pdfs/contacts.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
           <h1>Contact Details Report</h1>
           <p>Generated on: #DateFormat(Now(), 'mm/dd/yyyy')#</p>
