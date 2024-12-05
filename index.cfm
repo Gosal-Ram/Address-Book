@@ -49,8 +49,14 @@
                 </form>
                 <cfoutput>
                     <cfif structKeyExists(form, "submit")>
-                        <cfset local.result = application.value.signUp(form.fullName,form.emailId,form.userName,form.pwd1,form.profilePic)>
-                        <span class="text-info ms-5 fs-6 text-center">#local.result#</span>                
+                        <cfset result = application.value.signUp(
+                            fullName = form.fullName,
+                            emailId = form.emailId,
+                            userName = form.userName,
+                            pwd1 = form.pwd1,
+                            profilePic = form.profilePic
+                        )>
+                        <span class="text-info ms-5 fs-6 text-center">#result#</span>                
                     </cfif>
                 </cfoutput> 
             </div>

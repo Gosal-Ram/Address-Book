@@ -293,7 +293,8 @@ function triggerPdf() {
     link.download = "book"; 
     document.body.appendChild(link); 
     link.click();
-    document.body.removeChild(link); 
+    document.body.removeChild(link);
+    // window.reload() 
   }
   
 function exportPrint(){

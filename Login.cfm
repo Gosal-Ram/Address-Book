@@ -39,9 +39,11 @@
                     <input type="submit" name="submit"  class="registerBtn" value="Login">
                 </form>
                 <cfif structKeyExists(form,"submit")>  
-                    <cfset local.result = application.value.logIn(form.userName,form.pwd)>
+                    <cfset result = application.value.logIn(
+                        form.userName,
+                        form.pwd)>
                     <span class="text-danger fw-bold ms-5">
-                        <cfdump var = "#local.result#">
+                        <cfdump var = "#result#">
                     </span>
                 </cfif>   
                 <div class="text-center">
