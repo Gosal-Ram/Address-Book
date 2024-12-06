@@ -26,10 +26,23 @@
       <main class="mx-auto homeMain">
         <div class="homeTopContainer bg-light my-2 p-3 px-5 rounded">
           <div>
-            <cfif structKeyExists(form, "submitBtn")>  
-                <cfset local.result = application.value.createContact(form.nameTitle,form.firstName,form.lastName,form.gender,form.dob,form.contactProfile,
-                form.address,form.street,form.district,form.state,form.country,form.pincode,form.email,form.mobile)>
-                <span class="text-success fw-bold ms-5 fs-6">#local.result#</span>                
+            <cfif structKeyExists(form, "modalSubmitBtn")>  
+                <cfset result = application.value.createContact(
+                  nameTitle =  form.nameTitle,
+                  firstName = form.firstName,
+                  lastName = form.lastName,
+                  gender = form.gender,
+                  dob = form.dob,
+                  contactProfile = form.contactProfile,
+                  address = form.address,
+                  street = form.street,
+                  district = form.district,
+                  state = form.state,
+                  country = form.country,
+                  pincode = form.pincode,
+                  email = form.email,
+                  mobile = form.mobile)>
+                <span class="text-success fw-bold ms-5 fs-6">#result#</span>                
             </cfif>
           </div>
           <div class="homeTopImgCont d-flex justify-content-end ">
@@ -65,8 +78,8 @@
                 </thead>
                 <tbody>
                 <cfset ormReload()>
-                <cfset local.ormFetchContact = entityLoad("addressBookOrm" ,{_createdBy = "#session.username#"})> 
-                <cfloop array ="#local.ormFetchContact#" item="item">
+                <cfset ormFetchContact = entityLoad("addressBookOrm" ,{_createdBy = "#session.username#"})> 
+                <cfloop array ="#ormFetchContact#" item="item">
                   <tr>
                     <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="contact profile picture" width="50" height="50"></th>
                     <td>#item.getfirstname()# #item.getlastname()#</td>
@@ -192,7 +205,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" name="submitBtn" class="btn btn-primary">Save Changes</button>
+              <button type="submit" name="modalSubmitBtn" class="btn btn-primary">Save Changes</button>
             </div>
           </div>
         </div>
@@ -260,12 +273,12 @@
       </div>
 
       <cfif structKeyExists(form, "exportPdfBtn")>
-        <cfset local.PdfResult = application.value.generatePdf()>
+        <cfset PdfResult = application.value.generatePdf()>
         <cfdocument format="PDF" filename="assets/pdfs/contacts.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
           <h1>Contact Details Report</h1>
           <p>Generated on: #DateFormat(Now(), 'mm/dd/yyyy')#</p>
 
-          <cfif local.PdfResult.recordCount gt 0>
+          <cfif PdfResult.recordCount gt 0>
               <table border="1" cellpadding="5" cellspacing="0">
                   <thead>
                       <tr>
@@ -284,7 +297,7 @@
                       </tr>
                   </thead>
                   <tbody>
-                      <cfloop query="local.PdfResult">
+                      <cfloop query="PdfResult">
                           <tr>
                               <td>#nametitle#</td>
                               <td>#firstname#</td>
