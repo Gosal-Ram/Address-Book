@@ -12,9 +12,8 @@
     <cfset local.email  = result.other.email>
     <cfset local.fullname  = result.name>
     <cfset local.image = result.other.picture>
-<!---     <cfset local.value = createObject("component","component.index")> --->
-    <cfset local.result = application.value.googleSignIn(local.email, local.fullname,local.image)>
-    <cfdump  var = "#local.result#">
+    <cfset googleSignInResult = application.obj.googleSignIn(local.email, local.fullname,local.image)>
+    <cfdump  var = "#googleSignInResult#">
 <cfelse>
     <cfoutput>Authorization failed or access token missing.</cfoutput>
 </cfif>
