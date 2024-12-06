@@ -39,7 +39,7 @@
                     <input type="submit" name="submit"  class="registerBtn" value="Login">
                 </form>
                 <cfif structKeyExists(form,"submit")>  
-                    <cfset result = application.value.logIn(
+                    <cfset result = application.obj.logIn(
                         form.userName,
                         form.pwd)>
                     <span class="text-danger fw-bold ms-5">

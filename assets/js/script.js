@@ -6,7 +6,7 @@ function createContact(event){
 
     $.ajax({
         type:"POST",
-        url: "component/index.cfc?method=setContactId",
+        url: "component/addressBook.cfc?method=setContactId",
         data:{contactid: ""}, // setting contact id null
     })
 }
@@ -16,12 +16,12 @@ function editContact(contactid) {
     $(".modalTitle").text("EDIT CONTACT");
     $.ajax({
         type:"POST",
-        url: "component/index.cfc?method=setContactId",
+        url: "component/addressBook.cfc?method=setContactId",
         data:{contactid: contactid},
     })
     $.ajax({
         type:"POST",
-        url: "component/index.cfc?method=viewContact",
+        url: "component/addressBook.cfc?method=viewContact",
         data:{contactid: contactid},
         success:function(contactDetails){
             let formattedContactDetails = JSON.parse(contactDetails)
@@ -56,7 +56,7 @@ function logOut(){
     if(confirm("Confirm logout")){
         $.ajax({
             type:"POST",
-            url: "component/index.cfc?method=logOut",
+            url: "component/addressBook.cfc?method=logOut",
             success:function(){
               //window.location.href = "Login.cfm"
               location.reload();
@@ -71,7 +71,7 @@ function deleteContact(contactid){
     if(confirm("Confirm delete")){
         $.ajax({
             type:"POST",
-            url: "component/index.cfc?method=deleteContact",
+            url: "component/addressBook.cfc?method=deleteContact",
             data:{contactid: contactid},
             success:function(){
                 location.reload();    
@@ -86,7 +86,7 @@ function viewContact(contactid){
     // console.log(choice);
     $.ajax({
         type:"POST",
-        url: "component/index.cfc?method=viewContact",
+        url: "component/addressBook.cfc?method=viewContact",
         data:{contactid: contactid},
         success:function(contactDetails){
             let formattedContactDetails = JSON.parse(contactDetails)
@@ -312,7 +312,7 @@ function exportExcel() {
     // alert("hel")
     $.ajax({
         method: "POST",
-        url: "component/index.cfc?method=generateExcel",
+        url: "component/addressBook.cfc?method=generateExcel",
     });
 }
 
