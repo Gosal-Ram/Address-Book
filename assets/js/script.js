@@ -12,6 +12,9 @@ function createContact(event){
 }
 
 function editContact(contactid) {
+    // edit the text contet of form hidden var insert contactid
+
+    // set contactid in  form input to contactid
 
     $(".modalTitle").text("EDIT CONTACT");
     $.ajax({

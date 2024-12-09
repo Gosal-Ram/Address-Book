@@ -39,12 +39,12 @@
                     <input type="submit" name="submit"  class="registerBtn" value="Login">
                 </form>
                 <cfif structKeyExists(form,"submit")>  
-                    <cfset result = application.obj.logIn(
-                        form.userName,
-                        form.pwd)>
-                    <span class="text-danger fw-bold ms-5">
-                        <cfdump var = "#result#">
-                    </span>
+                    <cfset result = application.obj.logIn(form.userName,form.pwd)>
+                    <cfoutput>
+                        <span class="text-danger fw-bold ms-5">
+                            #result#
+                        </span>
+                    </cfoutput>
                 </cfif>   
                 <div class="text-center">
                     <div class="my-3 text-secondary loginFooterTxt">Or Sign In Using</div>

@@ -10,6 +10,7 @@
 </head>
 <body>
   <cfoutput>
+  <cfset currentDate = DateFormat(Now(), "yyyy-mm-dd")>
    <cfif structKeyExists(session, "isLoggedIn")>
       <header class="d-flex p-1 align-items-center">
           <div class="nameTxtContainer ms-4">
@@ -42,6 +43,7 @@
                   pincode = form.pincode,
                   email = form.email,
                   mobile = form.mobile
+<!---      contactid               --->
                   )>
                 <span class="text-success fw-bold ms-5 fs-6">#result#</span>                
             </cfif>
@@ -137,7 +139,7 @@
                               <option>Male</option>
                               <option>Female</option>
                             </select>
-                            <input type="date" name="dob" id="dob" value="" class="modalInputFor2">
+                            <input type="date" name="dob" id="dob" value=""  max="#currentDate#" class="modalInputFor2">
                           </div>
                           <div class="d-flex justify-content-between">
                             <div id="genderError" class="text-danger fw-bold"></div>
@@ -191,6 +193,7 @@
                           <div class="d-flex justify-content-between">
                             <input type="email" name="email" id="email" value="" class="modalInputForEven2">
                             <input type="text" name="mobile" id="mobile" value="" class="modalInputForEven2">
+                            <input type="hidden" name="contactid" id="" value="" class="">
                           </div>
                           <div class="d-flex justify-content-between">
                             <div id="emailError" class="text-danger fw-bold"></div>
@@ -206,6 +209,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" name="modalSubmitBtn" class="btn btn-primary">Save Changes</button>
                 <button type="submit" name="modalSubmitBtn" class="btn btn-primary">Save Changes</button>
               </div>
             </div>

@@ -1,4 +1,5 @@
 <cfcomponent>
+
     <cffunction  name="signUp" returnType="string">
         <cfargument  name="fullName" type="string" required="true">
         <cfargument  name="emailId" type="string" required="true">
@@ -76,16 +77,47 @@
         <cfreturn local.result>
     </cffunction>
 
+    <cffunction  name="getContacts" returnType="query">
+        <cfargument  name="contactid" default= "#session.username#">
+            <cfset local.flag_column = "contactid">
+        <cfif arguments.contactid EQ session.username>
+            <cfset local.flag_column = "createdBy">
+        </cfif>
+        <cfquery name = queryGetAllContactsInfo>
+            SELECT contactid,
+                nametitle,
+                firstname,
+                lastname,
+                gender,
+                dateofbirth,
+                contactprofile,
+                address,
+                street,
+                district,
+                STATE,
+                country,
+                pincode,
+                email,
+                mobile
+            FROM cfcontactDetails
+            WHERE #local.flag_column# = <cfqueryparam value = "#arguments.contactid#" cfsqltype = "cf_sql_varchar">
+        </cfquery>
+        <cfreturn queryGetAllContactsInfo>
+    </cffunction>
+    
     <cffunction  name="setContactId" access="remote">
+<!---  flag    --->
         <cfargument  name="contactId" required = "true">
         <cfif len(trim(arguments.contactId))>
-            <cfset session.contactId = arguments.contactId>
+            <cfset session.contactId = arguments.contactId>  
+<!---          true    --->
         <cfelse>
             <cfset structDelete(session, "contactId")>
+<!---        false     --->
         </cfif>
-            <!---    single btn submit prob      --->
-            <!--- if session var exists  -> edit --->
-            <!--- else its-> create --->
+            <!---   single btn submit prob     
+                    if session var exists  -> edit
+                    else its-> create     --->
     </cffunction>
 
     <cffunction  name="saveContact" returnType="any">
@@ -248,29 +280,10 @@
         <cfreturn true>
     </cffunction>
 
-    <cffunction  name="viewContact" returnType="struct" returnFormat = "json" access="remote">
+    <cffunction  name="viewContact" returnType="struct" returnFormat = "json" access="remote"> 
         <cfargument  name = "contactid" required ="true">
-        
+        <cfset queryViewPage = getContacts(arguments.contactid)>
         <cfset local.contactDetails = structNew()>
-        <cfquery name= "queryViewPage">
-            SELECT contactid,
-                nametitle,
-                firstname,
-                lastname,
-                gender,
-                dateofbirth,
-                contactprofile,
-                address,
-                street,
-                district,
-                STATE,
-                country,
-                pincode,
-                email,
-                mobile
-            FROM cfcontactDetails
-            WHERE contactid = <cfqueryparam value = "#arguments.contactid#" cfsqltype = "cf_sql_varchar">
-        </cfquery>
 
         <cfset local.contactDetails["contactid"] = queryViewPage.contactid>
         <cfset local.contactDetails["nametitle"] = queryViewPage.nametitle>
@@ -292,47 +305,12 @@
     </cffunction>
 
     <cffunction  name="generateExcel" access="remote">
-        <cfquery name="queryForExcel">
-           SELECT nametitle,
-                  firstname,
-                  lastname,
-                  gender,
-                  dateofbirth,
-                  contactprofile,
-                  address,
-                  street,
-                  district,
-                  STATE,
-                  country,
-                  pincode,
-                  email,
-                  mobile
-            FROM cfcontactDetails
-            WHERE createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "cf_sql_varchar">
-        </cfquery>
+        <cfset queryForExcel = getContacts()>
         <cfspreadsheet action="write" filename="../assets/spreadsheets/addressBookcontacts.xlsx" overwrite="true" query="queryForExcel" sheetname="courses"> 
     </cffunction>
 
     <cffunction  name="generatePdf" access="public">
-        <cfquery name="local.queryGetContacts">
-           SELECT nametitle,
-                  firstname,
-                  lastname,
-                  gender,
-                  dateofbirth,
-                  address,
-                  street,
-                  district,
-                  STATE,
-                  country,
-                  pincode,
-                  email,
-                  mobile
-            FROM cfcontactDetails
-            WHERE createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "cf_sql_varchar">
-
-        </cfquery> 
-        <cfreturn local.queryGetContacts>
+        <cfreturn getContacts()>
     </cffunction>
 
     <cffunction  name="mailBdayContacts" returnType = "query">
@@ -390,6 +368,7 @@
                         <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#arguments.image#" cfsqltype="CF_SQL_VARCHAR">)
             </cfquery>
+<!---          new query to get user id and set it to session    --->
             <cfset local.result = "user created successfully">
         </cfif>
         <cflocation url = "Home.cfm" addToken="no"> 
