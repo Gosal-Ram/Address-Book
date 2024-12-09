@@ -10,6 +10,7 @@
 </head>
 <body>
   <cfoutput>
+  <cfset currentDate = DateFormat(Now(), "yyyy-mm-dd")>
    <cfif structKeyExists(session, "isLoggedIn")>
       <header class="d-flex p-1 align-items-center">
           <div class="nameTxtContainer ms-4">
@@ -27,7 +28,7 @@
         <div class="homeTopContainer bg-light my-2 p-3 px-5 rounded">
           <div>
             <cfif structKeyExists(form, "modalSubmitBtn")>  
-                <cfset result = application.value.createContact(
+                <cfset result = application.obj.saveContact(
                   nameTitle =  form.nameTitle,
                   firstName = form.firstName,
                   lastName = form.lastName,
@@ -41,7 +42,9 @@
                   country = form.country,
                   pincode = form.pincode,
                   email = form.email,
-                  mobile = form.mobile)>
+                  mobile = form.mobile
+<!---      contactid               --->
+                  )>
                 <span class="text-success fw-bold ms-5 fs-6">#result#</span>                
             </cfif>
           </div>
@@ -56,7 +59,7 @@
         <div class="homeMainContainer d-flex my-2">
           <div class="homeLeftFlex me-2 bg-light d-flex flex-column align-items-center p-3">
             <cfif structKeyExists(session, "profilePicFromGoogle")>
-              <img src = "#session.profilePicFromGoogle#" alt="user profile picture" width="100" height="100">
+              <img src = "#session.profilePicFromGoogle#" alt="userProfilePic" width="100" height="100">
             <cfelse>
               <img src = "./assets/userImages/#session.profilePic#" alt="user profile picture" width="100" height="100">
             </cfif>
@@ -78,10 +81,10 @@
                 </thead>
                 <tbody>
                 <cfset ormReload()>
-                <cfset ormFetchContact = entityLoad("addressBookOrm" ,{_createdBy = "#session.username#"})> 
+                <cfset ormFetchContact = entityLoad("addressBookOrm" ,{createdBy = "#session.username#"})> 
                 <cfloop array ="#ormFetchContact#" item="item">
                   <tr>
-                    <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="contact profile picture" width="50" height="50"></th>
+                    <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="contactProfile" width="50" height="50"></th>
                     <td>#item.getfirstname()# #item.getlastname()#</td>
                     <td>#item.getemail()#</td>
                     <td>#item.getmobile()#</td>
@@ -97,123 +100,125 @@
       </main>
 
       <!-- edit modal -->
-      <div class="modal fade" id="editBtn" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-body d-flex">
-                <div class="modalLeftFlex bg-light">
-                    <div class="modalLeftFlexCont">
-                      <div class="modalTitle">
-                          EDIT CONTACT
+      <form method="POST" enctype="multipart/form-data" id="contactform" onsubmit="return modalValidate()">
+        <div class="modal fade" id="editBtn" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body d-flex">
+                  <div class="modalLeftFlex bg-light">
+                      <div class="modalLeftFlexCont">
+                        <div class="modalTitle">
+                            EDIT CONTACT
+                        </div>
+                        <h3 class="modalTiltle2">Personal Contact</h3>
+                          <div class="d-flex justify-content-between">
+                            <label class="modalLabelSelect">Title*</label>
+                            <label class="modalLabel">First Name*</label>
+                            <label class="modalLabel">Last Name*</label>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <select class="modalInputSelect" name="nameTitle" id="nameTitle">
+                              <option></option>
+                              <option>Mr.</option>
+                              <option>Ms.</option>
+                            </select>
+                            <input type="text" name="firstName" id="firstName" value="" placeholder="first name" class="modalInput">
+                            <input type="text" name="lastName" id="lastName" value="" placeholder="last name" class="modalInput">
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <div id = "nameTitleError" class="text-danger fw-bold"></div>
+                            <div id="firstNameError" class="text-danger fw-bold"></div>
+                            <div id="lastNameError" class="text-danger fw-bold"></div>
+                          </div>
+                          <div class="d-flex justify-content-center">
+                            <label class="modalLabelFor2">Gender*</label>
+                            <label class="modalLabelFor2">Date Of Birth*</label>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <select class="modalInputSelect" name="gender" id="gender" >
+                              <option>Male</option>
+                              <option>Female</option>
+                            </select>
+                            <input type="date" name="dob" id="dob" value=""  max="#currentDate#" class="modalInputFor2">
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <div id="genderError" class="text-danger fw-bold"></div>
+                            <div id="dobError" class="text-danger fw-bold"></div>
+                          </div>
+                          <div class="d-flex flex-column">
+                            <label class="modalLabelFor1">Upload Photo</label>
+                            <input type="file" name="contactProfile" id="contactProfile" value="" class="modalInputFor1">
+                          </div>
+                          <h3 class="modalTiltle2">Contact Details</h3>
+                          <div class="d-flex justify-content-center">
+                            <label class="modalLabelForEven2">Address*</label>
+                            <label class="modalLabelForEven2">Street*</label>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <input type="text" name="address" id="address" value="" class="modalInputForEven2">
+                            <input type="text" name="street" id="street" value="" class="modalInputForEven2">
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <div id="addressError" class="text-danger fw-bold"></div>
+                            <div id="streetError" class="text-danger fw-bold"></div>
+                          </div>
+                          <div class="d-flex justify-content-center">
+                            <label class="modalLabelForEven2">District*</label>
+                            <label class="modalLabelForEven2">State*</label>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <input type="text" name="district" id="district" value="" class="modalInputForEven2">
+                            <input type="text" name="state" id="state" value="" class="modalInputForEven2">
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <div id="districtError" class="text-danger fw-bold"></div>
+                            <div id="stateError" class="text-danger fw-bold"></div>
+                          </div>
+                          <div class="d-flex justify-content-center">
+                            <label class="modalLabelForEven2">Country*</label>
+                            <label class="modalLabelForEven2">Pincode*</label>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <input type="text" name="country" id="country" value="" class="modalInputForEven2">
+                            <input type="text" name="pincode" id="pincode" value="" class="modalInputForEven2">
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <div id="countryError" class="text-danger fw-bold"></div>
+                            <div id="pincodeError" class="text-danger fw-bold"></div>
+                          </div>
+                          <div class="d-flex justify-content-center">
+                            <label class="modalLabelForEven2">Email*</label>
+                            <label class="modalLabelForEven2">Phone*</label>
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <input type="email" name="email" id="email" value="" class="modalInputForEven2">
+                            <input type="text" name="mobile" id="mobile" value="" class="modalInputForEven2">
+                            <input type="hidden" name="contactid" id="" value="" class="">
+                          </div>
+                          <div class="d-flex justify-content-between">
+                            <div id="emailError" class="text-danger fw-bold"></div>
+                            <div id="mobileError" class="text-danger fw-bold"></div>
+                          </div>
                       </div>
-                      <h3 class="modalTiltle2">Personal Contact</h3>
-                      <form method="POST" enctype="multipart/form-data" id="contactform" onsubmit="return modalValidate()">
-                        <div class="d-flex justify-content-between">
-                          <label class="modalLabelSelect">Title*</label>
-                          <label class="modalLabel">First Name*</label>
-                          <label class="modalLabel">Last Name*</label>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <select class="modalInputSelect" name="nameTitle" id="nameTitle">
-                            <option></option>
-                            <option>Mr.</option>
-                            <option>Ms.</option>
-                          </select>
-                          <input type="text" name="firstName" id="firstName" value="" placeholder="first name" class="modalInput">
-                          <input type="text" name="lastName" id="lastName" value="" placeholder="last name" class="modalInput">
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <div id = "nameTitleError" class="text-danger fw-bold"></div>
-                          <div id="firstNameError" class="text-danger fw-bold"></div>
-                          <div id="lastNameError" class="text-danger fw-bold"></div>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                          <label class="modalLabelFor2">Gender*</label>
-                          <label class="modalLabelFor2">Date Of Birth*</label>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <select class="modalInputSelect" name="gender" id="gender" >
-                            <option>Male</option>
-                            <option>Female</option>
-                          </select>
-                          <input type="date" name="dob" id="dob" value="" class="modalInputFor2">
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <div id="genderError" class="text-danger fw-bold"></div>
-                          <div id="dobError" class="text-danger fw-bold"></div>
-                        </div>
-                        <div class="d-flex flex-column">
-                          <label class="modalLabelFor1">Upload Photo</label>
-                          <input type="file" name="contactProfile" id="contactProfile" value="" class="modalInputFor1">
-                        </div>
-                        <h3 class="modalTiltle2">Contact Details</h3>
-                        <div class="d-flex justify-content-center">
-                          <label class="modalLabelForEven2">Address*</label>
-                          <label class="modalLabelForEven2">Street*</label>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <input type="text" name="address" id="address" value="" class="modalInputForEven2">
-                          <input type="text" name="street" id="street" value="" class="modalInputForEven2">
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <div id="addressError" class="text-danger fw-bold"></div>
-                          <div id="streetError" class="text-danger fw-bold"></div>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                          <label class="modalLabelForEven2">District*</label>
-                          <label class="modalLabelForEven2">State*</label>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <input type="text" name="district" id="district" value="" class="modalInputForEven2">
-                          <input type="text" name="state" id="state" value="" class="modalInputForEven2">
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <div id="districtError" class="text-danger fw-bold"></div>
-                          <div id="stateError" class="text-danger fw-bold"></div>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                          <label class="modalLabelForEven2">Country*</label>
-                          <label class="modalLabelForEven2">Pincode*</label>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <input type="text" name="country" id="country" value="" class="modalInputForEven2">
-                          <input type="text" name="pincode" id="pincode" value="" class="modalInputForEven2">
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <div id="countryError" class="text-danger fw-bold"></div>
-                          <div id="pincodeError" class="text-danger fw-bold"></div>
-                        </div>
-                        <div class="d-flex justify-content-center">
-                          <label class="modalLabelForEven2">Email*</label>
-                          <label class="modalLabelForEven2">Phone*</label>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <input type="email" name="email" id="email" value="" class="modalInputForEven2">
-                          <input type="text" name="mobile" id="mobile" value="" class="modalInputForEven2">
-                        </div>
-                        <div class="d-flex justify-content-between">
-                          <div id="emailError" class="text-danger fw-bold"></div>
-                          <div id="mobileError" class="text-danger fw-bold"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modalRightFlex">
-                    <div class="mt-5 ms-5 bg-light">
-                      <img id="contactProfileEdit" src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" name="modalSubmitBtn" class="btn btn-primary">Save Changes</button>
+                  </div>
+                  <div class="modalRightFlex">
+                      <div class="mt-5 ms-5 bg-light">
+                        <img id="contactProfileEdit" src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
+                      </div>
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" name="modalSubmitBtn" class="btn btn-primary">Save Changes</button>
+                <button type="submit" name="modalSubmitBtn" class="btn btn-primary">Save Changes</button>
+              </div>
             </div>
           </div>
         </div>
       </form>
-      </div>
 
         <!-- view modal -->
-        <div class="modal fade" id="viewBtn" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal fade" id="viewBtn" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-body d-flex">
@@ -225,37 +230,37 @@
                       <div class="d-flex">
                         <div class="viewLabel">Name</div>
                         <div class="viewColon">:</div>
-                        <div class="viewData" id="fullNameView">Miss. Anjana S</div>
+                        <div class="viewData" id="fullNameView"></div>
                       </div>
                       <div class="d-flex">
                         <div class="viewLabel">Gender</div>
                         <div class="viewColon">:</div>
-                        <div class="viewData" id="genderView">Female</div>
+                        <div class="viewData" id="genderView"></div>
                       </div>
                       <div class="d-flex">
                         <div class="viewLabel">DOB</div>
                         <div class="viewColon">:</div>
-                        <div class="viewData" id="dobView">12-05-2021</div>
+                        <div class="viewData" id="dobView"></div>
                       </div>
                       <div class="d-flex">
                         <div class="viewLabel">Address</div>
                         <div class="viewColon">:</div>
-                        <div class="viewData" id="addressView">35,East Car Street,Nagercoil,TamilNadu,India</div>
+                        <div class="viewData" id="addressView"></div>
                       </div>
                       <div class="d-flex">
                         <div class="viewLabel">Pincode</div>
                         <div class="viewColon">:</div>
-                        <div class="viewData" id="pincodeView">629001</div>
+                        <div class="viewData" id="pincodeView"></div>
                       </div>
                       <div class="d-flex">
                         <div class="viewLabel">Email Id</div>
                         <div class="viewColon">:</div>
-                        <div class="viewData" id="emailView">anjana@gamil.com</div>
+                        <div class="viewData" id="emailView"></div>
                       </div>
                       <div class="d-flex">
                         <div class="viewLabel">Phone</div>
                         <div class="viewColon">:</div>
-                        <div class="viewData" id="mobileView">1234567895</div>
+                        <div class="viewData" id="mobileView"></div>
                       </div>
                       <div class="d-flex justify-content-center mt-3">
                         <button type="button" class="btn createBtn" data-bs-dismiss="modal">Close</button>
@@ -273,7 +278,7 @@
       </div>
 
       <cfif structKeyExists(form, "exportPdfBtn")>
-        <cfset PdfResult = application.value.generatePdf()>
+        <cfset PdfResult = application.obj.generatePdf()>
         <cfdocument format="PDF" filename="assets/pdfs/contacts.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
           <h1>Contact Details Report</h1>
           <p>Generated on: #DateFormat(Now(), 'mm/dd/yyyy')#</p>
@@ -323,6 +328,7 @@
     </cfif>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./assets/js/script.js"></script>
+    <!-- <script src="./assets/js/jquery-3.7.1.min.js"></script> -->
   </cfoutput>
 </body>
 </html>
