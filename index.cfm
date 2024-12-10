@@ -49,7 +49,7 @@
                 </form>
                 <cfoutput>
                     <cfif structKeyExists(form, "submit")>
-                        <cfset result = application.value.signUp(
+                        <cfset result = application.obj.signUp(
                             fullName = form.fullName,
                             emailId = form.emailId,
                             userName = form.userName,
