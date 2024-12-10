@@ -1,31 +1,20 @@
 function createContact(event){
-
+    
+    document.getElementById("contactId").value = ""
     $(".modalTitle").text("CREATE CONTACT");
     document.getElementById("contactform").reset();
     document.getElementById("contactProfileEdit").src ="./assets/images/user-grey-icon.png";
-
-    $.ajax({
-        type:"POST",
-        url: "component/index.cfc?method=setContactId",
-        data:{contactid: ""}, // setting contact id null
-    })
 }
 
 function editContact(contactid) {
-
+    document.getElementById("contactId").value = contactid
     $(".modalTitle").text("EDIT CONTACT");
     $.ajax({
         type:"POST",
-        url: "component/index.cfc?method=setContactId",
-        data:{contactid: contactid},
-    })
-    $.ajax({
-        type:"POST",
-        url: "component/index.cfc?method=viewContact",
+        url: "component/addressBook.cfc?method=viewContact",
         data:{contactid: contactid},
         success:function(contactDetails){
             let formattedContactDetails = JSON.parse(contactDetails)
-            // console.log(formattedContactDetails);
             document.getElementById("nameTitle").value = formattedContactDetails.nametitle;
             document.getElementById("firstName").value = formattedContactDetails.firstname;
             document.getElementById("lastName").value = formattedContactDetails.lastname;
@@ -46,6 +35,21 @@ function editContact(contactid) {
             document.getElementById("pincode").value = formattedContactDetails.pincode;
             document.getElementById("email").value = formattedContactDetails.email;
             document.getElementById("mobile").value = formattedContactDetails.mobile;
+
+            let selectedRoleIds =  []
+            formattedContactDetails.roleIds.DATA.forEach(function (value, index, array) {
+                selectedRoleIds.push(value[0])
+            });
+
+            
+
+            $("#role").val(selectedRoleIds);
+
+            
+            
+            console.log(selectedRoleIds);
+            console.log(formattedContactDetails.roleIds);
+
             document.getElementById("contactProfileEdit").src = "./assets/contactImages/"+formattedContactDetails.contactprofile;   
         }
     })
@@ -56,7 +60,7 @@ function logOut(){
     if(confirm("Confirm logout")){
         $.ajax({
             type:"POST",
-            url: "component/index.cfc?method=logOut",
+            url: "component/addressBook.cfc?method=logOut",
             success:function(){
               //window.location.href = "Login.cfm"
               location.reload();
@@ -71,7 +75,7 @@ function deleteContact(contactid){
     if(confirm("Confirm delete")){
         $.ajax({
             type:"POST",
-            url: "component/index.cfc?method=deleteContact",
+            url: "component/addressBook.cfc?method=deleteContact",
             data:{contactid: contactid},
             success:function(){
                 location.reload();    
@@ -86,11 +90,11 @@ function viewContact(contactid){
     // console.log(choice);
     $.ajax({
         type:"POST",
-        url: "component/index.cfc?method=viewContact",
+        url: "component/addressBook.cfc?method=viewContact",
         data:{contactid: contactid},
         success:function(contactDetails){
             let formattedContactDetails = JSON.parse(contactDetails)
-            console.log(formattedContactDetails);
+            // console.log(formattedContactDetails);
             document.getElementById("fullNameView").textContent = `${formattedContactDetails.nametitle} ${formattedContactDetails.firstname} ${formattedContactDetails.lastname} ` 
             document.getElementById("genderView").textContent = formattedContactDetails.gender;
             document.getElementById("dobView").textContent = formattedContactDetails.dateofbirth.split(" ",3).join(" ");  
@@ -98,6 +102,7 @@ function viewContact(contactid){
             document.getElementById("pincodeView").textContent = formattedContactDetails.pincode;
             document.getElementById("emailView").textContent = formattedContactDetails.email;
             document.getElementById("mobileView").textContent = formattedContactDetails.mobile;
+            document.getElementById("roleView").textContent = formattedContactDetails.role.DATA.join(" ,");
             document.getElementById("conatctProfileView").src = "./assets/contactImages/"+formattedContactDetails.contactprofile;        
         }
     })
@@ -185,6 +190,7 @@ function modalValidate() {
     let pincode = document.getElementById("pincode").value.trim();
     let email = document.getElementById("email").value.trim();
     let mobile = document.getElementById("mobile").value.trim();
+    let role = document.getElementById("role").value;
 
     let nameTitleError = document.getElementById("nameTitleError");
     let firstNameError = document.getElementById("firstNameError");
@@ -199,6 +205,7 @@ function modalValidate() {
     let pincodeError = document.getElementById("pincodeError");
     let emailError = document.getElementById("emailError");
     let mobileError = document.getElementById("mobileError");
+    let roleError = document.getElementById("roleError");
     
     nameTitleError.textContent = "";
     firstNameError.textContent = "";
@@ -213,6 +220,7 @@ function modalValidate() {
     pincodeError.textContent = "";
     emailError.textContent = "";
     mobileError.textContent = "";
+    roleError.textContent = "";
     
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -250,7 +258,7 @@ function modalValidate() {
     }
     
     if (street === "") {
-        streetError.textContent = "Street is required.";
+        streetError.textContent = "Please provide the required street";
         isValid = false;
     }
     
@@ -260,12 +268,16 @@ function modalValidate() {
     }
     
     if (state === "") {
-        stateError.textContent = "State is required.";
+        stateError.textContent = "Please provide the required state";
         isValid = false;
     }
     
     if (country === "") {
         countryError.textContent = "Country is required.";
+        isValid = false;
+    }
+    if (role === "") {
+        roleError.textContent = "Role is required.";
         isValid = false;
     }
     
@@ -280,7 +292,7 @@ function modalValidate() {
     }
     
     if (!phoneRegex.test(mobile)) {
-        mobileError.textContent = "Valid 10-digit Phone Number is required.";
+        mobileError.textContent = "Valid Phone Number is required.";
         isValid = false;
     }
     
@@ -312,7 +324,7 @@ function exportExcel() {
     // alert("hel")
     $.ajax({
         method: "POST",
-        url: "component/index.cfc?method=generateExcel",
+        url: "component/addressBook.cfc?method=generateExcel",
     });
 }
 
