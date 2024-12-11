@@ -86,7 +86,7 @@
                 <cfset ormReload()>
                 <cfset ormFetchContact = entityLoad("addressBookOrm" ,{createdBy = "#session.username#"})> 
                 <cfloop array ="#ormFetchContact#" item="item">
-                  <tr>
+                  <tr id ="#item.getcontactid()#">
                     <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="contactProfile" width="50" height="50"></th>
                     <td>#item.getfirstname()# #item.getlastname()#</td>
                     <td>#item.getemail()#</td>
@@ -298,6 +298,7 @@
       <cfif structKeyExists(form, "exportPdfBtn")>
         <cfset PdfResult = application.obj.generatePdf()>
         <cfdocument format="PDF" filename="assets/pdfs/contacts.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
+        
           <h1>Contact Details Report</h1>
           <p>Generated on: #DateFormat(Now(), 'mm/dd/yyyy')#</p>
 
@@ -317,10 +318,13 @@
                           <th>Pincode</th>
                           <th>Email</th>
                           <th>Mobile</th>
+                          <th>Roles</th>
                       </tr>
                   </thead>
                   <tbody>
                       <cfloop query="PdfResult">
+                      <cfset roleStr = "">
+                      <cfset roleQuery = application.obj.getRoleName(contactid)>
                           <tr>
                               <td>#nametitle#</td>
                               <td>#firstname#</td>
@@ -334,6 +338,10 @@
                               <td>#pincode#</td>
                               <td>#email#</td>
                               <td>#mobile#</td>
+                              <cfloop query="roleQuery">
+                                <cfset roleStr = roleStr & roleQuery.roleName & ", ">
+                              </cfloop>
+                              <td>#roleStr#</td>
                           </tr>
                       </cfloop>
                   </tbody>
