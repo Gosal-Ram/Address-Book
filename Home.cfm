@@ -323,8 +323,6 @@
                   </thead>
                   <tbody>
                       <cfloop query="PdfResult">
-                      <cfset roleStr = "">
-                      <cfset roleQuery = application.obj.getRoleName(contactid)>
                           <tr>
                               <td>#nametitle#</td>
                               <td>#firstname#</td>
@@ -338,10 +336,7 @@
                               <td>#pincode#</td>
                               <td>#email#</td>
                               <td>#mobile#</td>
-                              <cfloop query="roleQuery">
-                                <cfset roleStr = roleStr & roleQuery.roleName & ", ">
-                              </cfloop>
-                              <td>#roleStr#</td>
+                              <td>#roleNames#</td>
                           </tr>
                       </cfloop>
                   </tbody>
