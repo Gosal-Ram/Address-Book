@@ -101,7 +101,51 @@
                 mobile
             FROM cfcontactDetails
             WHERE #local.flag_column# = <cfqueryparam value = "#arguments.contactid#" cfsqltype = "cf_sql_varchar">
-        </cfquery>
+        </cfquery> 
+        
+        <!--- <cfquery name="queryGetAllContactsInfo">
+            SELECT 
+                cd.contactid,
+                cd.nametitle,
+                cd.firstname,
+                cd.lastname,
+                cd.gender,
+                cd.dateofbirth,
+                cd.contactprofile,
+                cd.address,
+                cd.street,
+                cd.district,
+                cd.state,
+                cd.country,
+                cd.pincode,
+                cd.email,
+                cd.mobile,
+                STRING_AGG(r.roleName, ',') AS roleNames
+            FROM 
+                cfcontactDetails cd
+            LEFT JOIN 
+                cfrole_contactId rc ON cd.contactid = rc.contactid
+            LEFT JOIN 
+                cfrole r ON rc.roleid = r.roleid
+            WHERE 
+                #local.flag_column# = <cfqueryparam value="#arguments.contactid#" cfsqltype="cf_sql_varchar">
+            GROUP BY 
+                cd.contactid,
+                cd.nametitle,
+                cd.firstname,
+                cd.lastname,
+                cd.gender,
+                cd.dateofbirth,
+                cd.contactprofile,
+                cd.address,
+                cd.street,
+                cd.district,
+                cd.state,
+                cd.country,
+                cd.pincode,
+                cd.email,
+                cd.mobile
+        </cfquery>--->
         <cfreturn queryGetAllContactsInfo>
     </cffunction>
     
@@ -123,7 +167,7 @@
         <cfargument type="string" required="true" name="mobile">
         <cfargument type="string" required="true" name="role">
         
-        <cfset local.roles = ListToArray(arguments.role, ",")>
+        <!---         <cfset local.roles = ListToArray(arguments.role, ",")> --->
 
         <cfset local.result = "">
         <!---  SETTING DEFAULT PROFILE PICTURE --->
@@ -171,6 +215,21 @@
         <cfelse>
             <!---  if arg has contactid   =>EDIT(UPDATE) --->
             <cfif len(trim(arguments.contactId))>
+                <!---    deleting all selected         --->
+                <cfquery name = "queryDeleteSelectedRoles">
+                    DELETE FROM cfrole_contactId  
+                    WHERE contactid = <cfqueryparam value = "#arguments.contactid#" cfsqltype="CF_SQL_VARCHAR">
+                </cfquery>
+                <!---     Adding all new selected     --->
+                <cfloop list="#arguments.role#" index="roleid">
+                    <cfquery name="insertRole">
+                        INSERT INTO cfrole_contactId (roleId, contactid)
+                        VALUES (
+                            <cfqueryparam value="#roleid#" cfsqltype="CF_SQL_INTEGER">,
+                            <cfqueryparam value = "#arguments.contactid#" cfsqltype="CF_SQL_VARCHAR">
+                        )
+                    </cfquery>
+                </cfloop>
 
                 <cfquery name = "queryInsertEdits">
                     UPDATE cfcontactDetails
@@ -238,23 +297,23 @@
                     AND createdBy =<cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR">
                 </cfquery>
                 <cfif len(trim(arguments.role)) > 
-                    <cfloop list="#arguments.role#" index="role">
+                    <cfloop list="#arguments.role#" index="roleid">
                         <!--- Fetch roleId from cfrole table based on role name --->
-                        <cfquery name="queryGetRoleId">
-                            SELECT roleId
+                      <!---  <cfquery name="queryGetRoleId">
+                            SELECT roleName
                             FROM cfrole
-                            WHERE roleName = <cfqueryparam value="#role#" cfsqltype="CF_SQL_VARCHAR">
-                        </cfquery>
+                            WHERE roleId = <cfqueryparam value="#roleid#" cfsqltype="CF_SQL_VARCHAR">
+                        </cfquery> --->
 
-                        <cfif queryRecordCount(queryGetRoleId) GT 0>
+                        <!--- <cfif queryRecordCount(queryGetRoleId) GT 0> --->
                             <cfquery name="insertRole">
                                 INSERT INTO cfrole_contactId (roleId, contactid)
                                 VALUES (
-                                    <cfqueryparam value="#queryGetRoleId.roleId#" cfsqltype="CF_SQL_INTEGER">,
+                                    <cfqueryparam value="#roleid#" cfsqltype="CF_SQL_INTEGER">,
                                     <cfqueryparam value="#getContactId.contactId#" cfsqltype="CF_SQL_VARCHAR">
                                 )
                             </cfquery>
-                        </cfif>
+                       <!---  </cfif> --->
                     </cfloop>
                 </cfif>
 
@@ -297,6 +356,18 @@
         <cfreturn true>
     </cffunction>
 
+    <cffunction  name="getRoleName" returnType = "query">
+        <cfargument  name="contactid" required ="true">
+        <cfquery name = queryViewRole>
+            SELECT roleName
+            FROM cfrole
+            JOIN  cfrole_contactId
+            ON cfrole.roleId = cfrole_contactId.roleId
+            WHERE contactid = <cfqueryparam value = "#arguments.contactid#" cfsqltype="CF_SQL_VARCHAR">
+        </cfquery>
+        <cfreturn queryViewRole>
+    </cffunction>
+
     <cffunction  name="viewContact" returnType="struct" returnFormat = "json" access="remote"> 
         <cfargument  name = "contactid" required ="true">
         <cfset queryViewPage = getContacts(arguments.contactid)>
@@ -319,12 +390,14 @@
         <cfset local.contactDetails["mobile"] = queryViewPage.mobile>
 
         <cfquery name = queryViewRole>
-            SELECT roleName
+            SELECT roleName 
             FROM cfrole
             JOIN  cfrole_contactId
             ON cfrole.roleId = cfrole_contactId.roleId
             WHERE contactid = <cfqueryparam value = "#arguments.contactid#" cfsqltype="CF_SQL_VARCHAR">
         </cfquery>
+
+
 
         <cfquery name = querygetRoleId>
             SELECT cfrole.roleId
@@ -341,7 +414,17 @@
     </cffunction>
 
     <cffunction  name="generateExcel" access="remote">
-        <cfset queryForExcel = getContacts()>
+        <!---         <cfset queryForExcel = getContacts()>  --->
+         <cfset queryForExcel = getContacts()> 
+        <cfset queryAddColumn(queryForExcel, "Roles", "varchar", [])>
+        <cfloop query="queryForExcel">
+            <cfset rolesForContact = getRoleName(queryForExcel.contactid)>
+            <cfset roleNamesArr = arrayNew(1)>
+            <cfloop query="rolesForContact">
+                <cfset arrayAppend(roleNamesArr, rolesForContact.roleName)>
+            </cfloop>
+            <cfset queryForExcel.Roles[currentRow] = arrayToList(roleNamesArr, ", ")>
+        </cfloop> 
         <cfspreadsheet action="write" filename="../assets/spreadsheets/addressBookcontacts.xlsx" overwrite="true" query="queryForExcel" sheetname="courses"> 
     </cffunction>
 
