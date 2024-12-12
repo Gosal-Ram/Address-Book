@@ -286,13 +286,18 @@ function modalValidate() {
 }
 
 function triggerPdf() {
+    $.ajax({
+        type:"POST",
+        url: "component/addressBook.cfc?method=generatePdf",
+        success:function(pdfName){
+            let newPdfName= JSON.parse(pdfName);
     const link = document.createElement("a");
-    link.href = "assets/pdfs/contacts.pdf"; 
-    link.download = "book"; 
+    link.href = `assets/pdfs/${newPdfName}.pdf`; 
+    link.download = newPdfName; 
     document.body.appendChild(link); 
     link.click();
     document.body.removeChild(link);
-    // window.reload() 
+    }})
   }
   
 function exportPrint(){
