@@ -52,9 +52,9 @@
             </cfif>
           </div>
           <div class="homeTopImgCont d-flex justify-content-end ">
-            <form name="create Pdf " method="POST" >
-              <button type="submit" name="exportPdfBtn" class="pdfBtn" onclick="triggerPdf()" id="downloadPdfBtn"><img class="me-2" src="./assets/images/pdf-icon.png" alt="" width="30" height="30"></button>
-            </form>
+<!---             <form name="create Pdf " method="POST" > --->
+              <button type="button" name="exportPdfBtn" class="pdfBtn" onclick="triggerPdf()" id="downloadPdfBtn"><img class="me-2" src="./assets/images/pdf-icon.png" alt="" width="30" height="30"></button>
+<!---             </form> --->
             <a href="./assets/spreadsheets/addressBookcontacts.xlsx" download="contactsSpreadsheet" onclick="exportExcel()"><img class="ms-2" src="./assets/images/excel-icon.png" alt="" width="30" height="30"></a>
             <a href="" onclick="exportPrint()"><img class="ms-3" src="./assets/images/printer-icon.png" alt="" width="30" height="30"></a>
           </div>
@@ -84,7 +84,7 @@
                 </thead>
                 <tbody>
                 <cfset ormReload()>
-                <cfset ormFetchContact = entityLoad("addressBookOrm" ,{createdBy = "#session.username#"})> 
+                <cfset ormFetchContact = entityLoad("addressBookOrm" ,{createdBy = "#session.username#",activeStatus = 1})> 
                 <cfloop array ="#ormFetchContact#" item="item">
                   <tr id ="#item.getcontactid()#">
                     <th scope="row"><img src="./assets/contactImages/#item.getcontactprofile()#" alt="contactProfile" width="50" height="50"></th>
@@ -155,9 +155,13 @@
                             <div class="d-flex flex-column">
                               <label class="modalLabelForEven2">Role*</label>
                               <select name="role" id="role" multiple class="modalInputForEven2 " multiple >
-                                <option value="1">Role 1</option>
+                              <cfset getOptions = application.obj.getRoleNameAndRoleId()>
+                              <cfloop query="getOptions">
+                                <option value="#getOptions.roleId#">#getOptions.roleName#</option>
+                              </cfloop>
+                                <!---<option value="1">Role 1</option> 
                                 <option value="2">Role 2</option>
-                                <option value="3">Role 3</option>
+                                <option value="3">Role 3</option>--->
                               </select>
                             </div>
                             <div class="d-flex justify-content-between">
@@ -194,7 +198,7 @@
                           </div>
                           <div class="d-flex justify-content-between">
                             <input type="text" name="country" id="country" value="" class="modalInputForEven2">
-                            <input type="text" name="pincode" id="pincode" value="" class="modalInputForEven2">
+                            <input type="text" name="pincode" id="pincode"  maxLength = "6" value="" class="modalInputForEven2">
                           </div>
                           <div class="d-flex justify-content-between">
                             <div id="countryError" class="text-danger fw-bold"></div>
@@ -206,7 +210,7 @@
                           </div>
                           <div class="d-flex justify-content-between">
                             <input type="email" name="email" id="email" value="" class="modalInputForEven2">
-                            <input type="text" name="mobile" id="mobile" value="" class="modalInputForEven2">
+                            <input type="text" name="mobile" id="mobile" value="" maxLength = "10" class="modalInputForEven2">
                             <input type="hidden" name="contactId" id="contactId" value="" class="">
                           </div>
                           <div class="d-flex justify-content-between">
@@ -295,7 +299,7 @@
           </div>
       </div>
 
-      <cfif structKeyExists(form, "exportPdfBtn")>
+       <!---<cfif structKeyExists(form, "exportPdfBtn")>
         <cfset PdfResult = application.obj.generatePdf()>
         <cfdocument format="PDF" filename="assets/pdfs/contacts.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
         
@@ -323,8 +327,6 @@
                   </thead>
                   <tbody>
                       <cfloop query="PdfResult">
-                      <cfset roleStr = "">
-                      <cfset roleQuery = application.obj.getRoleName(contactid)>
                           <tr>
                               <td>#nametitle#</td>
                               <td>#firstname#</td>
@@ -338,10 +340,7 @@
                               <td>#pincode#</td>
                               <td>#email#</td>
                               <td>#mobile#</td>
-                              <cfloop query="roleQuery">
-                                <cfset roleStr = roleStr & roleQuery.roleName & ", ">
-                              </cfloop>
-                              <td>#roleStr#</td>
+                              <td>#roleNames#</td>
                           </tr>
                       </cfloop>
                   </tbody>
@@ -350,7 +349,7 @@
               <p>No contacts found for the current user.</p>
           </cfif>
         </cfdocument>
-      </cfif>
+      </cfif>--->
     </cfif>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./assets/js/script.js"></script>

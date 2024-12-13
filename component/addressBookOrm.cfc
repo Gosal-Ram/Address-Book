@@ -6,6 +6,7 @@
     <cfproperty name = "email">
     <cfproperty name = "mobile">
     <cfproperty name = "createdBy">
+    <cfproperty name = "activeStatus">
 </cfcomponent>
 
 

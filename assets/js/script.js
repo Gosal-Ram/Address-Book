@@ -35,20 +35,8 @@ function editContact(contactid) {
             document.getElementById("pincode").value = formattedContactDetails.pincode;
             document.getElementById("email").value = formattedContactDetails.email;
             document.getElementById("mobile").value = formattedContactDetails.mobile;
-            document.getElementById("contactProfileEdit").src = "./assets/contactImages/"+formattedContactDetails.contactprofile;   
-
-            let selectedRoleIds =  []
-            formattedContactDetails.roleIds.DATA.forEach(function (value, index, array) {
-                selectedRoleIds.push(value[0])
-            });
-
-            // let selectedRoleIds = formattedContactDetails.roles.DATA.map(role => role.roleId);
-            
-
-
-            $("#role").val(selectedRoleIds);
-            // console.log(selectedRoleIds);
-            // console.log(formattedContactDetails.roleIds);
+            document.getElementById("contactProfileEdit").src = "./assets/contactImages/"+formattedContactDetails.contactprofile;
+            $("#role").val( formattedContactDetails.roleIds);
 
         }
     })
@@ -85,17 +73,12 @@ function deleteContact(contactid){
 }
 
 function viewContact(contactid){
-   
-    // var choice= confirm("Confirm delete")
-    // console.log(choice);
     $.ajax({
         type:"POST",
         url: "component/addressBook.cfc?method=viewContact",
         data:{contactid: contactid},
         success:function(contactDetails){
             let formattedContactDetails = JSON.parse(contactDetails)
-            // console.log(formattedContactDetails);
-            console.log( formattedContactDetails.role.DATA.join(" ,"));
             document.getElementById("fullNameView").textContent = `${formattedContactDetails.nametitle} ${formattedContactDetails.firstname} ${formattedContactDetails.lastname} ` 
             document.getElementById("genderView").textContent = formattedContactDetails.gender;
             document.getElementById("dobView").textContent = formattedContactDetails.dateofbirth.split(" ",3).join(" ");  
@@ -103,10 +86,10 @@ function viewContact(contactid){
             document.getElementById("pincodeView").textContent = formattedContactDetails.pincode;
             document.getElementById("emailView").textContent = formattedContactDetails.email;
             document.getElementById("mobileView").textContent = formattedContactDetails.mobile;
-             document.getElementById("roleView").textContent = formattedContactDetails.role.DATA.join(" ,");
-            // document.getElementById("roleView").textContent = formattedContactDetails.roles.DATA.map(role => role.roleName).join(", ");
-
+            document.getElementById("roleView").textContent = formattedContactDetails.role;
             document.getElementById("conatctProfileView").src = "./assets/contactImages/"+formattedContactDetails.contactprofile;        
+            // console.log(formattedRoleNames)
+            // console.log(formattedContactDetails);
         }
     })
 }
@@ -303,13 +286,18 @@ function modalValidate() {
 }
 
 function triggerPdf() {
+    $.ajax({
+        type:"POST",
+        url: "component/addressBook.cfc?method=generatePdf",
+        success:function(pdfName){
+            let newPdfName= JSON.parse(pdfName);
     const link = document.createElement("a");
-    link.href = "assets/pdfs/contacts.pdf"; 
-    link.download = "book"; 
+    link.href = `assets/pdfs/${newPdfName}.pdf`; 
+    link.download = newPdfName; 
     document.body.appendChild(link); 
     link.click();
     document.body.removeChild(link);
-    // window.reload() 
+    }})
   }
   
 function exportPrint(){
