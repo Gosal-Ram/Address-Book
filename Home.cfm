@@ -52,10 +52,8 @@
             </cfif>
           </div>
           <div class="homeTopImgCont d-flex justify-content-end ">
-<!---             <form name="create Pdf " method="POST" > --->
-              <button type="button" name="exportPdfBtn" class="pdfBtn" onclick="triggerPdf()" id="downloadPdfBtn"><img class="me-2" src="./assets/images/pdf-icon.png" alt="" width="30" height="30"></button>
-<!---             </form> --->
-            <a href="./assets/spreadsheets/addressBookcontacts.xlsx" download="contactsSpreadsheet" onclick="exportExcel()"><img class="ms-2" src="./assets/images/excel-icon.png" alt="" width="30" height="30"></a>
+            <button type="button" name="exportPdfBtn" class="pdfBtn" onclick="triggerPdf()" id="downloadPdfBtn"><img class="me-2" src="./assets/images/pdf-icon.png" alt="" width="30" height="30"></button>
+            <a href="" onclick="exportExcel()"><img class="ms-2" src="./assets/images/excel-icon.png" alt="" width="30" height="30"></a>
             <a href="" onclick="exportPrint()"><img class="ms-3" src="./assets/images/printer-icon.png" alt="" width="30" height="30"></a>
           </div>
         </div>
@@ -68,6 +66,7 @@
             </cfif>
             <h5 class="fullNameTxt mt-2">#session.fullName#</h5>
             <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
+            <button type="button" class="createBtn" onclick ="">UPLOAD CONTACT</button>
           </div>
           <div class="homeRightFlex bg-light" id="homeRightFlex">
             <table class="table align-middle table-hover table-borderless">
@@ -159,10 +158,7 @@
                               <cfloop query="getOptions">
                                 <option value="#getOptions.roleId#">#getOptions.roleName#</option>
                               </cfloop>
-                                <!---<option value="1">Role 1</option> 
-                                <option value="2">Role 2</option>
-                                <option value="3">Role 3</option>--->
-                              </select>
+                              </select> 
                             </div>
                             <div class="d-flex justify-content-between">
                               <div id="roleError" class="text-danger fw-bold"></div>
