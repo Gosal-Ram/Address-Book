@@ -319,3 +319,12 @@ function exportExcel() {
     });
 }
 
+/* document.getElementById("downloadWithData").addEventListener("click", function() {
+    window.location.href = "/path/to/Template_with_data.xlsx"; 
+});
+
+document.getElementById("downloadPlainTemplate").addEventListener("click", function() {
+    window.location.href = "/path/to/Plain_Template.xlsx"; 
+});
+ */
+
