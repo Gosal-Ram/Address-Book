@@ -1,5 +1,4 @@
 function createContact(event){
-    
     document.getElementById("contactId").value = ""
     $(".modalTitle").text("CREATE CONTACT");
     document.getElementById("contactform").reset();
@@ -7,6 +6,7 @@ function createContact(event){
 }
 
 function editContact(contactid) {
+    clearErrorMessages();
     document.getElementById("contactId").value = contactid
     $(".modalTitle").text("EDIT CONTACT");
     $.ajax({
@@ -42,14 +42,57 @@ function editContact(contactid) {
     })
 }
 
-function logOut(){
+function plainTempDownload(){ 
+    window.location.href = "./assets/spreadsheets/Plain_Template.xlsx"; 
+}
 
+function dataTempDownload(){ 
+    // alert("hello")
+        $.ajax({
+            method: "POST",
+            url: "component/addressBook.cfc?method=uploadExcel",
+            success:function(excelName){
+                let newexcelName= JSON.parse(excelName);
+                const link = document.createElement("a");
+                link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
+                link.download = newexcelName; 
+                document.body.appendChild(link); 
+                link.click();
+                document.body.removeChild(link);
+                } 
+ 
+        });
+}
+
+function uploadExcelFile(){        
+var fileName = document.getElementById("uploadExcel").files[0];
+var uploadObj = new FormData()
+uploadObj.append("uploadData", fileName)
+if(fileName.files.length > 0)
+{
+    errorelement =""
+    $.ajax({
+    method: "POST",
+    url: "component/addressBook.cfc?method=retrieveExcelData",
+    contenttype:false,
+    processdata:false,
+    data:uploadObj
+        // $("#uploadResult").text("file uploaded successfully")
+        // alert("hello")
+      })
+}
+else 
+error
+}
+
+
+
+function logOut(){
     if(confirm("Confirm logout")){
         $.ajax({
             type:"POST",
             url: "component/addressBook.cfc?method=logOut",
             success:function(){
-              //window.location.href = "Login.cfm"
               location.reload();
             }
         })
@@ -57,16 +100,13 @@ function logOut(){
 } 
 
 function deleteContact(contactid){
-    // var choice= confirm("Confirm delete")
-    // console.log(choice);
     if(confirm("Confirm delete")){
         $.ajax({
             type:"POST",
             url: "component/addressBook.cfc?method=deleteContact",
             data:{contactid: contactid},
             success:function(){
-                // location.reload();  
-                document.getElementById(contactid).remove()  
+            document.getElementById(contactid).remove()  
             }
         })
     }
@@ -95,7 +135,6 @@ function viewContact(contactid){
 }
 
 function loginValidate(){
-
     let userName = document.getElementById("userName").value;
     let pwd = document.getElementById("pwd").value;
     let userNameError = document.getElementById("userNameError");
@@ -159,9 +198,34 @@ function signInValidate(){
     }
     return isValid
 }
+// Function to clear error messages
+function clearErrorMessages() {
+    const errorFields = [
+        "nameTitleError",
+        "firstNameError",
+        "lastNameError",
+        "genderError",
+        "dobError",
+        "addressError",
+        "streetError",
+        "districtError",
+        "stateError",
+        "countryError",
+        "pincodeError",
+        "emailError",
+        "mobileError",
+        "roleError",
+    ];
+
+    errorFields.forEach(fieldId => {
+        const errorElement = document.getElementById(fieldId);
+        if (errorElement) {
+            errorElement.textContent = "";
+        }
+    });
+}
 
 function modalValidate() {
-
     let isValid = true;
     let nameTitle = document.getElementById("nameTitle").value;
     let firstName = document.getElementById("firstName").value.trim();
@@ -178,107 +242,79 @@ function modalValidate() {
     let mobile = document.getElementById("mobile").value.trim();
     let role = document.getElementById("role").value;
 
-    let nameTitleError = document.getElementById("nameTitleError");
-    let firstNameError = document.getElementById("firstNameError");
-    let lastNameError = document.getElementById("lastNameError");
-    let genderError = document.getElementById("genderError");
-    let dobError = document.getElementById("dobError");
-    let addressError = document.getElementById("addressError");
-    let streetError = document.getElementById("streetError");
-    let districtError = document.getElementById("districtError");
-    let stateError = document.getElementById("stateError");
-    let countryError = document.getElementById("countryError");
-    let pincodeError = document.getElementById("pincodeError");
-    let emailError = document.getElementById("emailError");
-    let mobileError = document.getElementById("mobileError");
-    let roleError = document.getElementById("roleError");
-    
-    nameTitleError.textContent = "";
-    firstNameError.textContent = "";
-    lastNameError.textContent = "";
-    genderError.textContent = "";
-    dobError.textContent = "";
-    addressError.textContent = "";
-    streetError.textContent = "";
-    districtError.textContent = "";
-    stateError.textContent = "";
-    countryError.textContent = "";
-    pincodeError.textContent = "";
-    emailError.textContent = "";
-    mobileError.textContent = "";
-    roleError.textContent = "";
-    
+    clearErrorMessages();
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const phoneRegex = /^[0-9]{10}$/;
     const pincodeRegex = /^[0-9]{6}$/;
     
     if (nameTitle === "") {
-        nameTitleError.textContent = "Title is required.";
+        document.getElementById("nameTitleError").textContent = "Title is required.";
         isValid = false;
     }
-    
+
     if (firstName === "") {
-        firstNameError.textContent = "First Name is required.";
+        document.getElementById("firstNameError").textContent = "First Name is required.";
         isValid = false;
     }
-    
+
     if (lastName === "") {
-        lastNameError.textContent = "Last Name is required.";
+        document.getElementById("lastNameError").textContent = "Last Name is required.";
         isValid = false;
     }
-    
+
     if (gender === "") {
-        genderError.textContent = "Gender is required.";
+        document.getElementById("genderError").textContent = "Gender is required.";
         isValid = false;
     }
-    
+
     if (dob === "") {
-        dobError.textContent = "Date of Birth is required.";
+        document.getElementById("dobError").textContent = "Date of Birth is required.";
         isValid = false;
     }
-    
+
     if (address === "") {
-        addressError.textContent = "Address is required.";
+        document.getElementById("addressError").textContent = "Address is required.";
         isValid = false;
     }
-    
+
     if (street === "") {
-        streetError.textContent = "Please provide the required street";
+        document.getElementById("streetError").textContent = "Please provide the required street.";
         isValid = false;
     }
-    
+
     if (district === "") {
-        districtError.textContent = "District is required.";
+        document.getElementById("districtError").textContent = "District is required.";
         isValid = false;
     }
-    
+
     if (state === "") {
-        stateError.textContent = "Please provide the required state";
+        document.getElementById("stateError").textContent = "Please provide the required state.";
         isValid = false;
     }
-    
+
     if (country === "") {
-        countryError.textContent = "Country is required.";
+        document.getElementById("countryError").textContent = "Country is required.";
         isValid = false;
     }
+
     if (role === "") {
-        roleError.textContent = "Role is required.";
+        document.getElementById("roleError").textContent = "Role is required.";
         isValid = false;
     }
-    
+
     if (!pincodeRegex.test(pincode)) {
-        pincodeError.textContent = "Valid 6-digit Pincode is required.";
+        document.getElementById("pincodeError").textContent = "Valid 6-digit Pincode is required.";
         isValid = false;
     }
-    
+
     if (!emailRegex.test(email)) {
-        emailError.textContent = "Valid Email is required.";
+        document.getElementById("emailError").textContent = "Valid Email is required.";
         isValid = false;
     }
-    
+
     if (!phoneRegex.test(mobile)) {
-        mobileError.textContent = "Valid Phone Number is required.";
+        document.getElementById("mobileError").textContent = "Valid Phone Number is required.";
         isValid = false;
     }
     
@@ -291,13 +327,13 @@ function triggerPdf() {
         url: "component/addressBook.cfc?method=generatePdf",
         success:function(pdfName){
             let newPdfName= JSON.parse(pdfName);
-    const link = document.createElement("a");
-    link.href = `assets/pdfs/${newPdfName}.pdf`; 
-    link.download = newPdfName; 
-    document.body.appendChild(link); 
-    link.click();
-    document.body.removeChild(link);
-    }})
+            const link = document.createElement("a");
+            link.href = `assets/pdfs/${newPdfName}.pdf`; 
+            link.download = newPdfName; 
+            document.body.appendChild(link); 
+            link.click();
+            document.body.removeChild(link);
+            }})
   }
   
 function exportPrint(){
@@ -316,6 +352,16 @@ function exportExcel() {
     $.ajax({
         method: "POST",
         url: "component/addressBook.cfc?method=generateExcel",
+        success:function(excelName){
+            let newexcelName= JSON.parse(excelName);
+            const link = document.createElement("a");
+            link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
+            link.download = newexcelName; 
+            document.body.appendChild(link); 
+            link.click();
+            document.body.removeChild(link);
+            }
     });
 }
+
 
