@@ -366,9 +366,23 @@
         <cfreturn local.contactDetails>
     </cffunction>
 
+    <cffunction  name="uploadExcel" access="remote" returnFormat = "JSON">        
+        <cfreturn generateExcel()>
+    </cffunction>
+
+    <cffunction  name="retrieveExcelData" access ="remote">
+        <cfargument name="excelFile" required = "true">
+        <cfspreadsheet  action="read" headerrow="1" excludeheaderrow="true" query="uploadedData" src="#arguments.excelFile#">
+        <!-- <cfset local.result = ""> -->
+        <!-- <cfset local.result = "file uploaded successfully"> -->
+        <!-- <cfreturn > -->
+    </cffunction>
+
+
     <cffunction  name="generateExcel" access="remote" returnFormat = "JSON">
          <cfset local.queryForExcel = getContacts()> 
-         <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactid")> 
+         <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactid")>
+         <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactprofile")> 
         <cfset local.excelName = "#session.userName#_#dateTimeFormat(Now(), "mm-dd-yyyy_HH-nn-ss")#">
         <cfspreadsheet action="write" filename="../assets/spreadsheets/#local.excelName#.xlsx" overwrite="true" query="local.queryForExcel" sheetname="courses"> 
         <cfreturn local.excelName>
@@ -376,7 +390,7 @@
 
     <cffunction  name="generatePdf" access="remote" returnType = "string" returnFormat = "json">
         <cfset local.PdfResult = getContacts()>
-         <cfset local.PdfResult = queryDeleteColumn(local.PdfResult, "contactid")> 
+        <cfset local.PdfResult = queryDeleteColumn(local.PdfResult, "contactid")> 
         <cfset local.pdfName = "#session.userName#_#dateTimeFormat(Now(), "mm-dd-yyyy_HH-nn-ss")#">
         <cfdocument format="PDF" filename="../assets/pdfs/#local.pdfName#.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
           <cfoutput>
@@ -387,6 +401,7 @@
               <table border="1" cellpadding="5" cellspacing="0">
                   <thead>
                       <tr>
+                          <th>contactprofile</th>
                           <th>Title</th>
                           <th>First Name</th>
                           <th>Last Name</th>
@@ -405,6 +420,7 @@
                   <tbody>
                       <cfloop query="local.PdfResult">
                           <tr>
+                              <td><img src="../assets/contactImages/#contactprofile#" alt="contactProfile" width="50" height="50"> </td>
                               <td>#nametitle#</td>
                               <td>#firstname#</td>
                               <td>#lastname#</td>
@@ -512,3 +528,5 @@
     </cffunction>
 
 </cfcomponent>
+
+
