@@ -42,6 +42,74 @@ function editContact(contactid) {
     })
 }
 
+function plainTempDownload(){ 
+    window.location.href = "./assets/spreadsheets/Plain_Template.xlsx"; 
+}
+
+function dataTempDownload(){ 
+    // alert("hello")
+        $.ajax({
+            method: "POST",
+            url: "component/addressBook.cfc?method=uploadExcel",
+            success:function(excelName){
+                let newexcelName= JSON.parse(excelName);
+                const link = document.createElement("a");
+                link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
+                link.download = newexcelName; 
+                document.body.appendChild(link); 
+                link.click();
+                document.body.removeChild(link);
+                } 
+ 
+        });
+}
+
+function uploadExcelFile() {
+    var excelFile = document.getElementById("uploadedExcelFile").files[0];
+    var errorMsg = document.getElementById("uploadExcelError");
+    var allowedExtensions = [".xlsx", ".xls"];
+
+    errorMsg.textContent = "";
+
+    if (excelFile) {
+        var fileName = excelFile.name.toLowerCase();
+        var isValidExtension = allowedExtensions.some(function(extension) {
+            return fileName.endsWith(extension);
+        });
+    
+        if (isValidExtension) {
+          
+        var uploadObj = new FormData();
+        uploadObj.append("excelFile", excelFile);
+    
+        $.ajax({
+            type: "POST",
+            url: "component/addressBook.cfc?method=retrieveExcelFile",
+            data: uploadObj,
+            contentType: false,
+            processData: false,
+            success:function(excelName){
+                let newexcelName= JSON.parse(excelName);
+                const link = document.createElement("a");
+                link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
+                link.download = newexcelName; 
+                document.body.appendChild(link); 
+                link.click();
+                document.body.removeChild(link);
+                }
+            }
+        );
+        }
+        else{
+            errorMsg.textContent = "Invalid file type. Please upload an Excel file with .xlsx or .xls extension.";
+            return;
+        }
+    }
+    else {
+        errorMsg.textContent = "Please select a file to upload.";
+    }
+}
+
 function logOut(){
     if(confirm("Confirm logout")){
         $.ajax({
@@ -319,12 +387,4 @@ function exportExcel() {
     });
 }
 
-/* document.getElementById("downloadWithData").addEventListener("click", function() {
-    window.location.href = "/path/to/Template_with_data.xlsx"; 
-});
-
-document.getElementById("downloadPlainTemplate").addEventListener("click", function() {
-    window.location.href = "/path/to/Plain_Template.xlsx"; 
-});
- */
 

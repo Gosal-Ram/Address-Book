@@ -366,9 +366,65 @@
         <cfreturn local.contactDetails>
     </cffunction>
 
+    <cffunction  name="uploadExcel" access="remote" returnFormat = "JSON">        
+        <cfreturn generateExcel()>
+    </cffunction>
+
+    <cffunction  name="retriveExcelData" >
+        <cfargument  name="uploadedData"> 
+        <cfset local.resultColValues = []>
+        <cfloop query="#arguments.uploadedData #">
+            <cfset local.emptyColumns = []>
+            <cfloop list="#arguments.uploadedData.columnlist#" index="columnName">
+                <cfset local.currentValue = arguments.uploadedData[columnName][arguments.uploadedData.currentRow]>
+                <cfif trim(local.currentValue) EQ "" OR isNull(local.currentValue)>
+                    <cfset arrayAppend(local.emptyColumns, columnName)>
+                </cfif>
+            </cfloop>
+            <cfif arrayLen(local.emptyColumns) GT 0>
+                <cfset arrayAppend(local.resultColValues, arrayToList(local.emptyColumns) & " missing") >
+            <cfelse>
+                <!---  TO CHECK VALID EMAIL  --->
+                <cfif isValid( "email" ,"#arguments.uploadedData.EMAIL#")>
+                <cfquery name = "local.queryCheckUnique">
+                    SELECT 
+                        email
+                    FROM 
+                        cfcontactDetails
+                    WHERE 
+                        email= <cfqueryparam value = "#arguments.uploadedData.EMAIL#" cfsqltype = "CF_SQL_VARCHAR" > AND
+                        activeStatus = <cfqueryparam value="1" cfsqltype="cf_sql_INTEGER">  AND
+                        createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >  
+                </cfquery>
+                <cfif local.queryCheckUnique.recordcount GT 0>
+                    <!---    UPDATE query        --->
+                    <cfset arrayAppend(local.resultColValues, "UPDATED") >
+                <cfelse>
+                    <!---     INSERT QUERY  --->
+                    <cfset arrayAppend(local.resultColValues, "INSERTED")>
+                </cfif>
+                <cfelse>
+                    <cfset arrayAppend(local.resultColValues, "Invalid Email")>
+                </cfif>
+            </cfif>
+        </cfloop>
+        <cfset queryAddColumn(arguments.uploadedData , "Results", local.resultColValues)> 
+        <cfreturn arguments.uploadedData>
+    </cffunction>
+
+    <cffunction  name="retrieveExcelFile" access ="remote" returnFormat = "JSON">
+        <cfargument name="excelFile" required = "true">
+        <cfspreadsheet  action="read" headerrow="1" excludeheaderrow="true" query="uploadedData" src="#arguments.excelFile#">
+        <cfset local.retrievedExcelResult = retriveExcelData(uploadedData)>
+        <cfset local.excelName = "Uploaded Result">
+        <cfspreadsheet action="write" filename="../assets/spreadsheets/#local.excelName#.xlsx" overwrite="true" query="local.retrievedExcelResult" sheetname="contactBook"> 
+        <cfreturn local.excelName>
+    </cffunction>
+
     <cffunction  name="generateExcel" access="remote" returnFormat = "JSON">
          <cfset local.queryForExcel = getContacts()> 
-         <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactid")> 
+         <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactid")>
+         <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactprofile")> 
         <cfset local.excelName = "#session.userName#_#dateTimeFormat(Now(), "mm-dd-yyyy_HH-nn-ss")#">
         <cfspreadsheet action="write" filename="../assets/spreadsheets/#local.excelName#.xlsx" overwrite="true" query="local.queryForExcel" sheetname="courses"> 
         <cfreturn local.excelName>
@@ -376,7 +432,7 @@
 
     <cffunction  name="generatePdf" access="remote" returnType = "string" returnFormat = "json">
         <cfset local.PdfResult = getContacts()>
-         <cfset local.PdfResult = queryDeleteColumn(local.PdfResult, "contactid")> 
+        <cfset local.PdfResult = queryDeleteColumn(local.PdfResult, "contactid")> 
         <cfset local.pdfName = "#session.userName#_#dateTimeFormat(Now(), "mm-dd-yyyy_HH-nn-ss")#">
         <cfdocument format="PDF" filename="../assets/pdfs/#local.pdfName#.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
           <cfoutput>
@@ -387,6 +443,7 @@
               <table border="1" cellpadding="5" cellspacing="0">
                   <thead>
                       <tr>
+                          <th>contactprofile</th>
                           <th>Title</th>
                           <th>First Name</th>
                           <th>Last Name</th>
@@ -405,6 +462,7 @@
                   <tbody>
                       <cfloop query="local.PdfResult">
                           <tr>
+                              <td><img src="../assets/contactImages/#contactprofile#" alt="contactProfile" width="50" height="50"> </td>
                               <td>#nametitle#</td>
                               <td>#firstname#</td>
                               <td>#lastname#</td>
@@ -512,3 +570,5 @@
     </cffunction>
 
 </cfcomponent>
+
+

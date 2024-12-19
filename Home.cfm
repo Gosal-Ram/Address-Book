@@ -11,6 +11,7 @@
     
 </head>
 <body>
+
   <cfoutput>
     <cfset currentDate = DateFormat(Now(), "yyyy-mm-dd")>
     <cfif structKeyExists(session, "isLoggedIn")>
@@ -66,7 +67,7 @@
               </cfif>
               <h5 class="fullNameTxt mt-2">#session.fullName#</h5>
               <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##editBtn" onclick ="createContact(event)">CREATE CONTACT</button>
-              <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##uploadBtn" onclick ="">UPLOAD CONTACT</button>
+              <button type="button" class="createBtn" data-bs-toggle="modal" data-bs-target="##uploadBtn">UPLOAD CONTACT</button>
             </div>
             <div class="homeRightFlex bg-light" id="homeRightFlex">
               <table class="table align-middle table-hover table-borderless">
@@ -304,20 +305,26 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form>
-                            <div class="mb-3">
-                                <label for="uploadExcel" class="form-label">Upload Excel*</label>
-                                <input type="file" class="form-control" id="uploadExcel" name="uploadExcel" accept=".xlsx, .xls">
-                            </div>
-                        </form>
-                        <div class="d-flex justify-content-end">
-                            <button id="downloadWithData" class="btn btn-primary me-2">Template with Data</button>
-                            <button id="downloadPlainTemplate" class="btn btn-secondary">Plain Template</button>
-                        </div>
+                        <form method = "POST" enctype="multipart/form-data">
+                          <div class="mb-3">
+                            <label for="uploadExcel" class="form-label">Upload Excel*</label>
+                            <input type="file" class="form-control" id="uploadedExcelFile" name="uploadExcel" accept=".xlsx, .xls" required>
+                          </div>
+                          <div class= "d-flex justify-content-start mt-4 text-danger fw-bold" id = "uploadExcelError"></div>
+                          <div class="d-flex justify-content-end">
+                              <button type = "button" onclick = "dataTempDownload()" id="downloadWithData" class="btn btn-primary me-2">Template with Data</button>
+                              <button type = "button" id="downloadPlainTemplate" onclick ="plainTempDownload()" class="btn btn-secondary">Plain Template</button>
+                          </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer d-flex justify-content-between">
+                      <div>
+                        <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal">Download Results</button>
+                      </div>
+                      <div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Submit</button>
+                        <button type="button" name="uploadSubmitBtn" onclick="uploadExcelFile()" class="btn btn-primary">Submit</button>
+                        </form>
+                      </div>
                     </div>
                 </div>
             </div>
@@ -325,6 +332,7 @@
     </cfif>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="./assets/js/script.js"></script>
+   
   </cfoutput>
 </body>
 </html>
