@@ -48,20 +48,20 @@ function plainTempDownload(){
 
 function dataTempDownload(){ 
     // alert("hello")
-        $.ajax({
-            method: "POST",
-            url: "component/addressBook.cfc?method=uploadExcel",
-            success:function(excelName){
-                let newexcelName= JSON.parse(excelName);
-                const link = document.createElement("a");
-                link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
-                link.download = newexcelName; 
-                document.body.appendChild(link); 
-                link.click();
-                document.body.removeChild(link);
-                } 
- 
-        });
+    $.ajax({
+        method: "POST",
+        url: "component/addressBook.cfc?method=uploadExcel",
+        success:function(excelName){
+            let newexcelName= JSON.parse(excelName);
+            const link = document.createElement("a");
+            link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
+            link.download = newexcelName; 
+            document.body.appendChild(link); 
+            link.click();
+            document.body.removeChild(link);
+            } 
+
+    });
 }
 
 function uploadExcelFile() {
@@ -358,10 +358,9 @@ function triggerPdf() {
             link.click();
             document.body.removeChild(link);
             }})
-  }
+}
   
 function exportPrint(){
-    // alert("hel")
     $(".btnHide").hide();
     var content= document.getElementById("homeRightFlex").innerHTML
     var fullPage = document.body.innerHTML;
@@ -372,7 +371,6 @@ function exportPrint(){
 }
 
 function exportExcel() {
-    // alert("hel")
     $.ajax({
         method: "POST",
         url: "component/addressBook.cfc?method=generateExcel",
