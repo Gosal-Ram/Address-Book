@@ -1,5 +1,4 @@
 <cfcomponent>
-
     <cffunction  name="signUp" returnType="string">
         <cfargument  name="fullName" type="string" required="true">
         <cfargument  name="emailId" type="string" required="true">
@@ -37,12 +36,13 @@
                         pwd,
                         profilePic
                     ) 
-                VALUES (<cfqueryparam value = "#arguments.fullName#" cfsqltype="CF_SQL_VARCHAR">,
+                VALUES 
+                    (<cfqueryparam value = "#arguments.fullName#" cfsqltype="CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#arguments.emailId#" cfsqltype="CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#arguments.userName#" cfsqltype="CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#local.encryptedPass#" cfsqltype="CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#local.imagePath#" cfsqltype="CF_SQL_VARCHAR">
-                    )
+                )
             </cfquery>
             <cfset local.result = "user created successfully">
         </cfif>
@@ -227,8 +227,8 @@
                     NOT contactid = <cfqueryparam value = "#arguments.contactId#" cfsqltype = "CF_SQL_integer">  
             </cfquery>
         <cfelse>
-            <cfquery name = "local.queryCheckUnique">
             <!--- FOR CREATE--->
+            <cfquery name = "local.queryCheckUnique">
                 SELECT 
                     email,
                     mobile
@@ -249,8 +249,10 @@
             <cfif len(trim(arguments.contactId))>
                 <!--- UPDATE ROLE SECTION        DELETING ALL SELECTED ROLES      --->
                 <cfquery name = "local.queryDeleteSelectedRoles">
-                    DELETE FROM contact_role_map  
-                    WHERE contactid = <cfqueryparam value = "#arguments.contactid#" cfsqltype="CF_SQL_integer">
+                    DELETE FROM 
+                        contact_role_map  
+                    WHERE 
+                        contactid = <cfqueryparam value = "#arguments.contactid#" cfsqltype="CF_SQL_integer">
                 </cfquery>
                 <cfset insertRole(arguments.role, arguments.contactid)>  <!---INSERTING NEW SELECTED ROLES --->
                 <!--- UPDATE OTHER CONTACT DETAILS SECTION--->
@@ -299,8 +301,7 @@
                             mobile,
                             createdBy
                         )
-                    VALUES 
-                        (
+                    VALUES (
                         <cfqueryparam value = "#arguments.nameTitle#" cfsqltype = "CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#arguments.firstname#" cfsqltype = "CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#arguments.lastname#" cfsqltype = "CF_SQL_VARCHAR">,
@@ -316,7 +317,7 @@
                         <cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR">,
                         <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR">
-                        )
+                    )
                 </cfquery>
                 <cfif len(trim(arguments.role)) > 
                     <cfset insertRole(arguments.role, local.resultInsertContact.generatedkey)>
@@ -725,13 +726,12 @@
                             emailId,
                             userName,
                             profilePic
-                        ) 
-                VALUES 
-                    (<cfqueryparam value = "#arguments.fullName#" cfsqltype="CF_SQL_VARCHAR">,
+                    ) 
+                VALUES (<cfqueryparam value = "#arguments.fullName#" cfsqltype="CF_SQL_VARCHAR">,
                     <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">,
                     <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">,
                     <cfqueryparam value = "#arguments.image#" cfsqltype="CF_SQL_VARCHAR">
-                    )
+                )
             </cfquery>
             <cfset local.result = "user created successfully">
         </cfif>
@@ -749,7 +749,6 @@
         </cfquery>
         <cfreturn local.queryRoleDetails>
     </cffunction>
-
 </cfcomponent>
 
 
