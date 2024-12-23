@@ -156,6 +156,19 @@
         </cfloop>
     </cffunction>
 
+    <cffunction  name="getContactid">
+        <cfargument  name="email">
+        <cfquery name = "local.queryFetchContactid">
+            SELECT
+                contactid
+            FROM 
+                cfcontactDetails
+            WHERE
+                email = <cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR"> 
+        </cfquery>
+        <cfreturn local.queryFetchContactid>
+    </cffunction>
+
     <cffunction  name="saveContact" returnType="any">
         <cfargument type="string" required="true" name="nameTitle">
         <cfargument type="string" required="true" name="firstName">
@@ -170,9 +183,9 @@
         <cfargument type="string" required="true" name="country">
         <cfargument type="string" required="true" name="pincode">
         <cfargument type="string" required="true" name="email">
-        <cfargument type="string" required="true" name="contactId">
         <cfargument type="string" required="true" name="mobile">
         <cfargument type="string" required="true" name="role">
+        <cfargument type="string" required="true" name="contactId">
         
         <cfset local.result = "">
         <!---  SETTING DEFAULT PROFILE PICTURE --->
@@ -215,12 +228,16 @@
         <cfelse>
             <cfquery name = "local.queryCheckUnique">
             <!--- FOR CREATE--->
-                SELECT email,mobile
-                FROM cfcontactDetails
-                WHERE (email= <cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" > OR 
-                        mobile= <cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >) AND
-                        createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" > AND  
-                        activeStatus = <cfqueryparam value="1" cfsqltype="cf_sql_INTEGER">       
+                SELECT 
+                    email,
+                    mobile
+                FROM 
+                    cfcontactDetails
+                WHERE (
+                    email= <cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR" > OR 
+                    mobile= <cfqueryparam value = "#arguments.mobile#" cfsqltype = "CF_SQL_VARCHAR" >) AND
+                    createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" > AND  
+                    activeStatus = <cfqueryparam value="1" cfsqltype="cf_sql_INTEGER">       
             </cfquery>
         </cfif>
 
@@ -370,14 +387,188 @@
         <cfreturn generateExcel()>
     </cffunction>
 
-    <cffunction  name="retrieveExcelData" access ="remote">
-        <cfargument name="excelFile" required = "true">
-        <cfspreadsheet  action="read" headerrow="1" excludeheaderrow="true" query="uploadedData" src="#arguments.excelFile#">
-        <!-- <cfset local.result = ""> -->
-        <!-- <cfset local.result = "file uploaded successfully"> -->
-        <!-- <cfreturn > -->
+    <cffunction  name="retriveExcelData" >
+        <cfargument  name="uploadedData"> 
+        <cfset local.resultColValues = []>
+        <cfset local.file = "user-grey-icon.png">
+        <cfset local.roleQuery = getRoleNameAndRoleId()>
+        <cfset local.columnValues = valueList(local.roleQuery.roleName)>
+        <cfset local.roleIdList = "">
+
+        <cfloop query="#arguments.uploadedData #">
+            <cfset local.validationErrors = []>
+
+            <!--- CHECK FOR MISSING FIELDS --->
+            <cfloop list="#arguments.uploadedData.columnlist#" index="columnName">
+                <cfset local.currentValue = arguments.uploadedData[columnName][arguments.uploadedData.currentRow]>
+                <cfif trim(local.currentValue) EQ "" OR isNull(local.currentValue)>
+                    <cfset arrayAppend(local.validationErrors, columnName & " missing")>
+                </cfif>
+            </cfloop>
+
+            <!--- ADDITIONAL VALIDATIONS --->
+            <cfif arrayLen(local.validationErrors) EQ 0>
+                <!--- Validate Title --->
+                <cfif NOT listFindNoCase("Mr.,Ms.", arguments.uploadedData.nameTitle)>
+                    <cfset arrayAppend(local.validationErrors, "Invalid Title (must be Mr. or Ms.)")>
+                </cfif>
+
+                <!--- Validate Date of Birth --->
+                <cfif NOT isDate(arguments.uploadedData.dateofbirth) OR createDateTime(arguments.uploadedData.dateofbirth) LT Now()>
+                    <cfset arrayAppend(local.validationErrors, "Invalid Date of Birth (must not be in the future)")>
+                </cfif>
+
+                <!--- Validate Pincode --->
+                <cfif len(trim(arguments.uploadedData.pincode)) NEQ 6 OR NOT isNumeric(arguments.uploadedData.pincode)>
+                    <cfset arrayAppend(local.validationErrors, "Invalid Pincode (must be 6 digits)")>
+                </cfif>
+
+                <!--- Validate Phone Number --->
+                <cfif len(trim(arguments.uploadedData.mobile)) NEQ 10 OR NOT isNumeric(arguments.uploadedData.mobile)>
+                    <cfset arrayAppend(local.validationErrors, "Invalid Mobile Number (must be 10 digits)")>
+                </cfif>
+
+                <!--- Validate Email --->
+                <cfif NOT isValid("email", arguments.uploadedData.email)>
+                    <cfset arrayAppend(local.validationErrors, "Invalid Email Address")>
+                </cfif>
+
+                <!--- Validate Roles --->
+                <cfif len(trim(arguments.uploadedData.ROLENAMES))>
+                    <cfset local.roles = arguments.uploadedData.ROLENAMES.toString()>
+                    <cfset local.validRoles = true> 
+                    
+                    <cfloop list="#local.roles#" index="roleName" delimiters=",">
+                        <cfif listFind(local.columnValues, roleName)>
+                            <cfloop query="local.roleQuery">
+                                <cfif roleName EQ local.roleQuery.roleName>
+                                    <cfset local.roleIdList = listAppend(local.roleIdList, local.roleQuery.roleId)>
+                                </cfif>
+                            </cfloop>
+                        <cfelse>
+                            <cfset local.validRoles = false>
+                            <cfset arrayAppend(local.validationErrors, "Invalid Role: " & roleName)>
+                            <cfbreak>
+                        </cfif>
+                    </cfloop>
+
+                    <cfif NOT local.validRoles>
+                        <cfset local.roleIdList = "">
+                    </cfif>
+                </cfif> 
+            </cfif>
+
+            <!--- If Validation Errors Exist --->
+            <cfif arrayLen(local.validationErrors) GT 0>
+                <cfset arrayAppend(local.resultColValues, arrayToList(local.validationErrors))>
+            <cfelse>
+                <!--- Proceed to Update or Insert --->
+                <cfquery name = "local.queryCheckUnique">
+                    SELECT 
+                        email
+                    FROM 
+                        cfcontactDetails
+                    WHERE 
+                        email= <cfqueryparam value = "#arguments.uploadedData.EMAIL#" cfsqltype = "CF_SQL_VARCHAR" > AND
+                        activeStatus = <cfqueryparam value="1" cfsqltype="cf_sql_INTEGER">  AND
+                        createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >  
+                </cfquery>
+                <cfif local.queryCheckUnique.recordcount GT 0>
+                    <!---    UPDATE query        --->
+                    <cfquery name = "local.queryInsertEdits">
+                        UPDATE 
+                            cfcontactDetails
+                        SET 
+                            nameTitle = <cfqueryparam value = "#arguments.uploadedData.nameTitle#" cfsqltype = "CF_SQL_VARCHAR">,
+                            firstname = <cfqueryparam value = "#arguments.uploadedData.firstname#" cfsqltype = "CF_SQL_VARCHAR">,
+                            lastname = <cfqueryparam value = "#arguments.uploadedData.lastname#" cfsqltype = "CF_SQL_VARCHAR">,
+                            gender = <cfqueryparam value = "#arguments.uploadedData.gender#" cfsqltype = "CF_SQL_VARCHAR">,
+                            dateofbirth = <cfqueryparam value = "#arguments.uploadedData.dateofbirth#" cfsqltype = "CF_SQL_VARCHAR">,
+                            contactprofile = <cfqueryparam value = "#local.file#" cfsqltype = "CF_SQL_VARCHAR">,
+                            address = <cfqueryparam value = "#arguments.uploadedData.address#" cfsqltype = "CF_SQL_VARCHAR">,
+                            street = <cfqueryparam value = "#arguments.uploadedData.street#" cfsqltype = "CF_SQL_VARCHAR">,
+                            district = <cfqueryparam value = "#arguments.uploadedData.district#" cfsqltype = "CF_SQL_VARCHAR">,
+                            STATE = <cfqueryparam value = "#arguments.uploadedData.state#" cfsqltype = "CF_SQL_VARCHAR">,
+                            country = <cfqueryparam value = "#arguments.uploadedData.country#" cfsqltype = "CF_SQL_VARCHAR">,
+                            pincode = <cfqueryparam value = "#arguments.uploadedData.pincode#" cfsqltype = "CF_SQL_VARCHAR">,
+                            email = <cfqueryparam value = "#arguments.uploadedData.email#" cfsqltype = "CF_SQL_VARCHAR">,
+                            mobile = <cfqueryparam value = "#arguments.uploadedData.mobile#" cfsqltype = "CF_SQL_VARCHAR">,
+                            updatedBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR">,
+                            updatedOn = <cfqueryparam value = "#Now()#" cfsqltype = "CF_SQL_TIMESTAMP">
+                        WHERE
+                            email = <cfqueryparam value = "#arguments.uploadedData.email#" cfsqltype = "CF_SQL_VARCHAR"> 
+                    </cfquery>
+                    <cfset local.contactid= getContactid(arguments.uploadedData.email)>
+                    <!--- UPDATE ROLE SECTION --->
+                    <cfquery name = "local.queryDeleteSelectedRoles">
+                        DELETE FROM contact_role_map  
+                        WHERE contactid = <cfqueryparam value = "#local.contactid#" cfsqltype="CF_SQL_integer">
+                    </cfquery>
+                    <cfif len(trim(arguments.uploadedData.ROLENAMES)) > 
+                        <cfset insertRole(local.roleIdList, local.contactid)>
+                    </cfif>
+                       
+                    <cfset arrayAppend(local.resultColValues, "UPDATED") >
+                <cfelse>
+                    <!---     INSERT QUERY  --->
+                    <cfquery name="local.queryInsertContact" result="local.resultInsertContact">
+                        INSERT INTO cfcontactDetails (
+                            nameTitle,
+                            firstname,
+                            lastname,
+                            gender,
+                            dateofbirth,
+                            contactprofile,
+                            address,
+                            street,
+                            district,
+                            STATE,
+                            country,
+                            pincode,
+                            email,
+                            mobile,
+                            createdBy
+                        )
+                        VALUES (
+                            <cfqueryparam value = "#arguments.uploadedData.nameTitle#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.firstname#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.lastname#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.gender#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.dateofbirth#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#local.file#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.address#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.street#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.district#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.state#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.country#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.pincode#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.email#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#arguments.uploadedData.mobile#" cfsqltype = "CF_SQL_VARCHAR">,
+                            <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR">
+                        )
+                    </cfquery>
+
+                    <cfif len(trim(arguments.uploadedData.ROLENAMES)) > 
+                        <cfset insertRole(local.roleIdList, local.resultInsertContact.generatedkey)>
+                    </cfif>
+
+                    <cfset arrayAppend(local.resultColValues, "INSERTED")>
+                </cfif>
+            </cfif>
+        </cfloop>
+         <!--- Append Results Column to Data --->
+        <cfset queryAddColumn(arguments.uploadedData , "Results", local.resultColValues)> 
+        <cfreturn arguments.uploadedData>
     </cffunction>
 
+    <cffunction  name="retrieveExcelFile" access ="remote" returnFormat = "JSON">
+        <cfargument name="excelFile" required = "true">
+        <cfspreadsheet  action="read" headerrow="1" excludeheaderrow="true" query="uploadedData" src="#arguments.excelFile#">
+        <cfset local.retrievedExcelResult = retriveExcelData(uploadedData)>
+        <cfset local.excelName = "Uploaded Result">
+        <cfspreadsheet action="write" filename="../assets/spreadsheets/#local.excelName#.xlsx" overwrite="true" query="local.retrievedExcelResult" sheetname="contactBook"> 
+        <cfreturn local.excelName>
+    </cffunction>
 
     <cffunction  name="generateExcel" access="remote" returnFormat = "JSON">
          <cfset local.queryForExcel = getContacts()> 
@@ -526,6 +717,8 @@
         </cfquery>
         <cfreturn local.queryRoleDetails>
     </cffunction>
+
+     
 
 </cfcomponent>
 

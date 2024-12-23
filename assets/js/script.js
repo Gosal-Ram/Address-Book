@@ -64,18 +64,51 @@ function dataTempDownload(){
         });
 }
 
-function uploadExcelFile(){        
+function uploadExcelFile() {
     var excelFile = document.getElementById("uploadedExcelFile").files[0];
-    var uploadObj = new FormData()
-    uploadObj.append("excelFile", excelFile)
-    // console.log(excelFile)
+    var errorMsg = document.getElementById("uploadExcelError");
+    var allowedExtensions = [".xlsx", ".xls"];
+
+    errorMsg.textContent = "";
+
+    if (excelFile) {
+        var fileName = excelFile.name.toLowerCase();
+        var isValidExtension = allowedExtensions.some(function(extension) {
+            return fileName.endsWith(extension);
+        });
+    
+        if (isValidExtension) {
+          
+        var uploadObj = new FormData();
+        uploadObj.append("excelFile", excelFile);
+    
         $.ajax({
-        type: "POST",
-        url: "component/addressBook.cfc?method=retrieveExcelData",
-        data: uploadObj,
-        contentType:false,
-        processData:false,
-    })
+            type: "POST",
+            url: "component/addressBook.cfc?method=retrieveExcelFile",
+            data: uploadObj,
+            contentType: false,
+            processData: false,
+            success:function(excelName){
+                let newexcelName= JSON.parse(excelName);
+                const link = document.createElement("a");
+                link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
+                link.download = newexcelName; 
+                document.body.appendChild(link); 
+                link.click();
+                document.body.removeChild(link);
+                location.reload();
+                }
+            }
+        );
+        }
+        else{
+            errorMsg.textContent = "Invalid file type. Please upload an Excel file with .xlsx or .xls extension.";
+            return;
+        }
+    }
+    else {
+        errorMsg.textContent = "Please select a file to upload.";
+    }
 }
 
 function logOut(){
