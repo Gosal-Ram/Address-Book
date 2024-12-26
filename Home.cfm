@@ -24,6 +24,7 @@
                 </div>
             </div>
         </header>
+        
         <main class="mx-auto homeMain">
           <div class="homeTopContainer bg-light my-2 p-3 px-5 rounded">
             <div>
@@ -313,7 +314,7 @@
                               <button type = "button" id="downloadPlainTemplate" onclick ="plainTempDownload()" class="btn btn-secondary">Plain Template</button>
                           </div>
                     </div>
-                    <div class="modal-footer d-flex justify-content-between">
+                    <div class="modal-footer d-flex justify-content-end">
                       <div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" name="uploadSubmitBtn" onclick="uploadExcelFile()" class="btn btn-primary">Submit</button>
