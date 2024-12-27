@@ -16,12 +16,16 @@
         <header class="d-flex p-1 align-items-center">
             <div class="nameTxtContainer ms-4">
                 <img src="./assets/images/contact-book.png" alt="" width="45" height="45">
-                <span class="headerHeadingName">ADDRESS BOOK</span>    
+                <a href = "Home.cfm" class = "titleLink text-light"
+                  <span class="headerHeadingName">ADDRESS BOOK</span>    
+                </a>
             </div>
             <div class="ms-auto d-flex me-5">
                 <div class="loginCont">
-                  <img src="./assets/images/exit.png" alt="" width="18" height="18">
-                  <a class="btn text-light" onClick="return logOut()">Logout</a>
+                  <a class="btn text-light" onClick="return logOut()"> 
+                    <img src="./assets/images/exit.png" alt="" width="18" height="18">
+                    Logout
+                  </a>
                 </div>
             </div>
         </header>
