@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Address Book Login Page</title>
+    <title>Login</title>
     <link rel="stylesheet" href="bootstrap-5.0.2-dist/bootstrap-5.0.2-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
+    <link href="assets/images/favicon.png" rel="icon">
 </head>
 <body>
     <header class="d-flex p-1 align-items-center fixed-top">

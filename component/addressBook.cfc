@@ -395,7 +395,7 @@
     </cffunction>
 
     <cffunction  name="retriveExcelData" >
-        <cfargument  name="uploadedData"> 
+        <cfargument name="uploadedData"> 
         <cfset local.resultColValues = []>
         <cfset local.file = "user-grey-icon.png">
         <!--- Getting all Default rolenames for crosscheck   --->
@@ -596,10 +596,18 @@
 
     <cffunction  name="retrieveExcelFile" access ="remote" returnFormat = "JSON">
         <cfargument name="excelFile" required = "true">
-        <cfspreadsheet  action="read" headerrow="1" excludeheaderrow="true" query="uploadedData" src="#arguments.excelFile#">
+        <cfspreadsheet  action="read"
+                        headerrow="1" 
+                        excludeheaderrow="true" 
+                        query="uploadedData" 
+                        src="#arguments.excelFile#">
         <cfset local.retrievedExcelResult = retriveExcelData(uploadedData)>
         <cfset local.excelName = "Uploaded Result_#session.userName#_#dateTimeFormat(Now(), "mm-dd-yyyy_HH-nn-ss")#">
-        <cfspreadsheet action="write" filename="../assets/spreadsheets/#local.excelName#.xlsx" overwrite="true" query="local.retrievedExcelResult" sheetname="contactBook"> 
+        <cfspreadsheet  action="write" 
+                        filename="../assets/spreadsheets/#local.excelName#.xlsx" 
+                        overwrite="true" 
+                        query="local.retrievedExcelResult" 
+                        sheetname="contactBook">
         <cfreturn local.excelName>
     </cffunction>
 
@@ -608,7 +616,11 @@
          <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactid")>
          <cfset local.queryForExcel = queryDeleteColumn(local.queryForExcel, "contactprofile")> 
         <cfset local.excelName = "#session.userName#_#dateTimeFormat(Now(), "mm-dd-yyyy_HH-nn-ss")#">
-        <cfspreadsheet action="write" filename="../assets/spreadsheets/#local.excelName#.xlsx" overwrite="true" query="local.queryForExcel" sheetname="courses"> 
+        <cfspreadsheet  action="write" 
+                        filename="../assets/spreadsheets/#local.excelName#.xlsx" 
+                        overwrite="true" 
+                        query="local.queryForExcel" 
+                        sheetname="courses"> 
         <cfreturn local.excelName>
     </cffunction>
 
@@ -616,7 +628,11 @@
         <cfset local.PdfResult = getContacts()>
         <cfset local.PdfResult = queryDeleteColumn(local.PdfResult, "contactid")> 
         <cfset local.pdfName = "#session.userName#_#dateTimeFormat(Now(), "mm-dd-yyyy_HH-nn-ss")#">
-        <cfdocument format="PDF" filename="../assets/pdfs/#local.pdfName#.pdf" overwrite="yes" pagetype="letter" orientation="portrait">
+        <cfdocument format="PDF" 
+                    filename="../assets/pdfs/#local.pdfName#.pdf" 
+                    overwrite="yes" 
+                    pagetype="letter" 
+                    orientation="portrait">
           <cfoutput>
           <h1>Contact Details Report</h1>
           <p>Generated on: #DateFormat(Now(), 'dd/mm/yyyy')#</p>
@@ -727,7 +743,8 @@
                             userName,
                             profilePic
                     ) 
-                VALUES (<cfqueryparam value = "#arguments.fullName#" cfsqltype="CF_SQL_VARCHAR">,
+                VALUES (
+                    <cfqueryparam value = "#arguments.fullName#" cfsqltype="CF_SQL_VARCHAR">,
                     <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">,
                     <cfqueryparam value = "#arguments.email#" cfsqltype="CF_SQL_VARCHAR">,
                     <cfqueryparam value = "#arguments.image#" cfsqltype="CF_SQL_VARCHAR">
