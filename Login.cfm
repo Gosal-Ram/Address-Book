@@ -12,7 +12,9 @@
     <header class="d-flex p-1 align-items-center fixed-top">
         <div class="nameTxtContainer ms-4">
             <img src="./assets/images/contact-book.png" alt="" width="45" height="45">
-            <span class="headerHeadingName">ADDRESS BOOK</span>    
+            <a href = "login.cfm" class = "titleLink text-light"
+                <span class="headerHeadingName">ADDRESS BOOK</span>    
+            </a>  
         </div>
         <div class="ms-auto d-flex me-5">
             <div class="signUpCont mx-4">

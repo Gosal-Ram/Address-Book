@@ -1,7 +1,10 @@
 header{
-    /* position: fixed; */
-    /* top: 0; */
     width: 100%;
+}
+
+.titleLink{
+    text-decoration: none;
+    font-size: large;
 }
 
 body{
@@ -17,7 +20,6 @@ body{
 header{
     background-color: #337ab7;
     color: white;
-    /* z-index: 1; */
 }
 
 main{
@@ -27,10 +29,8 @@ main{
 
 .mainDiv{
     width: 50%;
-    /* height: 700px; */
     display: flex;
     justify-content: center;
-    /* align-items: center; */
     border-radius: 20px;
     box-shadow: #7c7676;
 }
@@ -38,13 +38,11 @@ main{
 .leftFlex{
     flex-basis: 30%;
     background-color: #337ab7;
-    /* height: 700px; */
     border-radius: 20px 0 0 20px;
 }
 .rightFlex{
     margin-top: 50px;
     flex-basis: 70%;
-    /* height: 700px; */
 }
 
 .rightFlexHeading{
@@ -189,8 +187,6 @@ td > button{
 .modalTitle{
     color: #337ab7;
     background-color: #DAEEF7;
-    /* padding: 10px 10px; */
-    /* margin: 50px 45px 30px 50px; */
     font-size: 19px;
     font-weight: bold;
     text-align: center;
@@ -239,7 +235,6 @@ td > button{
     margin: 0 25px 8px 0;
     border-bottom: 1px solid #e2e2e2;
     width: 50%;
-    /* text-align: left; */
 }
 
 .modalInputFor2{
