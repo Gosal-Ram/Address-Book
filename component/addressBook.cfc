@@ -156,20 +156,6 @@
         </cfloop>
     </cffunction>
 
-    <cffunction  name="getContactid">
-        <cfargument  name="email">
-        <cfquery name = "local.queryFetchContactid">
-            SELECT
-                contactid
-            FROM 
-                cfcontactDetails
-            WHERE
-                email = <cfqueryparam value = "#arguments.email#" cfsqltype = "CF_SQL_VARCHAR"> AND
-                activeStatus = <cfqueryparam value="1" cfsqltype="cf_sql_INTEGER">
-        </cfquery>
-        <cfreturn local.queryFetchContactid.contactid>
-    </cffunction>
-
     <cffunction  name="saveContact" returnType="any">
         <cfargument type="string" required="true" name="nameTitle">
         <cfargument type="string" required="true" name="firstName">
@@ -394,6 +380,7 @@
 
     <cffunction  name="retriveExcelData" >
         <cfargument name="uploadedData"> 
+        <cfset local.contactProfile = "">
         <cfset local.resultColValues = []>
         <!--- Getting all Default rolenames for crosscheck   --->
         <cfset local.roleQuery = getRoleNameAndRoleId()>
@@ -408,13 +395,14 @@
                 activeStatus = <cfqueryparam value="1" cfsqltype="cf_sql_INTEGER">  AND
                 createdBy = <cfqueryparam value = "#session.userName#" cfsqltype = "CF_SQL_VARCHAR" >  
         </cfquery>
+
         <cfset local.existingEmailContacts = structNew()>
         <cfloop query="local.queryCheckUnique">
             <cfset local.existingEmailContacts[local.queryCheckUnique.email] = local.queryCheckUnique.contactid>
         </cfloop>
+        
         <cfloop query="#arguments.uploadedData #">
             <cfset local.roleIdList = "">
-            <cfset local.file = "">
             <cfset local.validationErrors = []>
 
             <!--- CHECK FOR MISSING FIELDS --->
@@ -501,7 +489,7 @@
                                                 lastname = arguments.uploadedData.lastname,
                                                 gender = arguments.uploadedData.gender,
                                                 dob = dateFormat(arguments.uploadedData.dateofbirth , "yyyy-mm-dd"),
-                                                contactprofile = local.file,
+                                                contactprofile = local.contactProfile,
                                                 address = arguments.uploadedData.address,
                                                 street = arguments.uploadedData.street,
                                                 district = arguments.uploadedData.district,
