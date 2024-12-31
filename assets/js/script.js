@@ -346,6 +346,7 @@ function modalValidate() {
 }
 
 function triggerPdf() {
+    // alert("hello")
     $.ajax({
         type:"POST",
         url: "component/addressBook.cfc?method=generatePdf",
