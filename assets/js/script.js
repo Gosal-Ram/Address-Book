@@ -1,6 +1,6 @@
 function createContact(event){
     document.getElementById("contactId").value = ""
-    $(".modalTitle").text("CREATE CONTACT");
+    document.querySelector(".modalTitle").textContent = "CREATE CONTACT";
     document.getElementById("contactform").reset();
     document.getElementById("contactProfileEdit").src ="./assets/images/user-grey-icon.png";
 }
@@ -8,7 +8,7 @@ function createContact(event){
 function editContact(contactid) {
     clearErrorMessages();
     document.getElementById("contactId").value = contactid
-    $(".modalTitle").text("EDIT CONTACT");
+    document.querySelector(".modalTitle").textContent = "EDIT CONTACT";
     $.ajax({
         type:"POST",
         url: "component/addressBook.cfc?method=viewContact",
@@ -37,6 +37,16 @@ function editContact(contactid) {
             document.getElementById("mobile").value = formattedContactDetails.mobile;
             document.getElementById("contactProfileEdit").src = "./assets/contactImages/"+formattedContactDetails.contactprofile;
             $("#role").val( formattedContactDetails.roleIds);
+            /* const roleElement = document.getElementById("role");
+                if (Array.isArray(formattedContactDetails.roleIds)) {
+                    for (const id of formattedContactDetails.roleIds) {
+                        const option = roleElement.querySelector(`option[value="${id}"]`);
+                        if (option) option.selected = true;
+                    }
+                } else {
+                    roleElement.value = formattedContactDetails.roleIds;
+                } */
+
 
         }
     })
