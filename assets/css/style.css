@@ -186,6 +186,9 @@ td > button{
 .modalLeftFlex{
     flex-basis: 72%;
 }
+.modalRightFlex{
+    flex-basis: 28%;
+}
 
 .modalTitle{
     color: #337ab7;
