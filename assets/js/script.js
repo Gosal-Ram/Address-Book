@@ -1,11 +1,39 @@
+// Function to clear error messages
+function clearErrorMessages(){
+    const errorFields = [
+        "nameTitleError",
+        "firstNameError",
+        "lastNameError",
+        "genderError",
+        "dobError",
+        "addressError",
+        "streetError",
+        "districtError",
+        "stateError",
+        "countryError",
+        "pincodeError",
+        "emailError",
+        "mobileError",
+        "roleError",
+    ];
+
+    errorFields.forEach(fieldId => {
+        const errorElement = document.getElementById(fieldId);
+        if (errorElement) {
+            errorElement.textContent = "";
+        }
+    });
+}
+
 function createContact(event){
+    clearErrorMessages();
     document.getElementById("contactId").value = ""
     document.querySelector(".modalTitle").textContent = "CREATE CONTACT";
     document.getElementById("contactform").reset();
     document.getElementById("contactProfileEdit").src ="./assets/images/user-grey-icon.png";
 }
 
-function editContact(contactid) {
+function editContact(contactid){
     clearErrorMessages();
     document.getElementById("contactId").value = contactid
     document.querySelector(".modalTitle").textContent = "EDIT CONTACT";
@@ -56,25 +84,7 @@ function plainTempDownload(){
     window.location.href = "./assets/spreadsheets/Plain_Template.xlsx"; 
 }
 
-function dataTempDownload(){ 
-    // alert("hello")
-    $.ajax({
-        method: "POST",
-        url: "component/addressBook.cfc?method=uploadExcel",
-        success:function(excelName){
-            let newexcelName= JSON.parse(excelName);
-            const link = document.createElement("a");
-            link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
-            link.download = newexcelName; 
-            document.body.appendChild(link); 
-            link.click();
-            document.body.removeChild(link);
-            } 
-
-    });
-}
-
-function uploadExcelFile() {
+function uploadExcelFile(){
     var excelFile = document.getElementById("uploadedExcelFile").files[0];
     var errorMsg = document.getElementById("uploadExcelError");
     var allowedExtensions = [".xlsx", ".xls"];
@@ -232,34 +242,8 @@ function signInValidate(){
     }
     return isValid
 }
-// Function to clear error messages
-function clearErrorMessages() {
-    const errorFields = [
-        "nameTitleError",
-        "firstNameError",
-        "lastNameError",
-        "genderError",
-        "dobError",
-        "addressError",
-        "streetError",
-        "districtError",
-        "stateError",
-        "countryError",
-        "pincodeError",
-        "emailError",
-        "mobileError",
-        "roleError",
-    ];
 
-    errorFields.forEach(fieldId => {
-        const errorElement = document.getElementById(fieldId);
-        if (errorElement) {
-            errorElement.textContent = "";
-        }
-    });
-}
-
-function modalValidate() {
+function modalValidate(){
     let isValid = true;
     let nameTitle = document.getElementById("nameTitle").value;
     let firstName = document.getElementById("firstName").value.trim();
@@ -354,8 +338,50 @@ function modalValidate() {
     
     return isValid;
 }
+  
+function exportPrint(){
+    $(".btnHide").hide();
+    var content= document.getElementById("homeRightFlex").innerHTML
+    var fullPage = document.body.innerHTML;
+    document.body.innerHTML = content;
+    window.print();
+    document.body.innerHTML = fullPage;
+}
 
-function triggerPdf() {
+function downloadFile(method, folder, extension){
+    $.ajax({
+        method: "POST",
+        url: `component/addressBook.cfc?method=${method}`,
+        success: function (response) {
+            let fileName = JSON.parse(response);
+            const link = document.createElement("a");
+            link.href = `assets/${folder}/${fileName}.${extension}`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+}
+
+function triggerPdf(){
+    downloadFile("generatePdf", "pdfs", "pdf");
+}
+
+function exportExcel(){
+    downloadFile("generateExcel", "spreadsheets", "xlsx");
+}
+
+function dataTempDownload(){
+    downloadFile("uploadExcel", "spreadsheets", "xlsx");
+}
+
+
+
+
+
+
+/* function triggerPdf() {
     // alert("hello")
     $.ajax({
         type:"POST",
@@ -369,16 +395,6 @@ function triggerPdf() {
             link.click();
             document.body.removeChild(link);
             }})
-}
-  
-function exportPrint(){
-    $(".btnHide").hide();
-    var content= document.getElementById("homeRightFlex").innerHTML
-    var fullPage = document.body.innerHTML;
-    document.body.innerHTML = content;
-    window.print();
-    document.body.innerHTML = fullPage;
-   
 }
 
 function exportExcel() {
@@ -396,5 +412,23 @@ function exportExcel() {
             }
     });
 }
+
+function dataTempDownload(){ 
+    // alert("hello")
+    $.ajax({
+        method: "POST",
+        url: "component/addressBook.cfc?method=uploadExcel",
+        success:function(excelName){
+            let newexcelName= JSON.parse(excelName);
+            const link = document.createElement("a");
+            link.href = `assets/spreadsheets/${newexcelName}.xlsx`; 
+            link.download = newexcelName; 
+            document.body.appendChild(link); 
+            link.click();
+            document.body.removeChild(link);
+            } 
+
+    });
+} */
 
 

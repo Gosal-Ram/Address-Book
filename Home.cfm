@@ -220,9 +220,12 @@
                         </div>
                     </div>
                     <div class="modalRightFlex">
-                        <div class="mt-5 ms-5 bg-light">
-                          <img id="contactProfileEdit" src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
-                        </div>
+                      <div class = "d-flex justify-content-end align-items-start">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="m-5 bg-light">
+                        <img id="contactProfileEdit" src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
+                      </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -290,7 +293,10 @@
                       </div>
                     </div>
                     <div class="modalRightFlex">
-                      <div class="mt-5 ms-5 bg-light">
+                      <div class = "d-flex justify-content-end align-items-start">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="m-5 bg-light">
                         <img id="conatctProfileView" src="./assets/images/user-grey-icon.png" alt="" width="100" height="100">
                       </div>
                     </div>
